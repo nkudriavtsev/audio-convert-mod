@@ -133,7 +133,11 @@ class mp3:
     ['160', '160 kbps'],
     ['192', '192 kbps'],
     ['256', '256 kbps'],
-    ['320', '320 kbps']
+    ['320', '320 kbps'],
+    ['-1', 'Preset Medium'],
+    ['-2', 'Preset Standard'],
+    ['-3', 'Preset Extreme'],
+    ['-4', 'Preset Insane']
                        ]
 
   def check(self):
@@ -160,10 +164,22 @@ class mp3:
 
   def encode(self, filename, newname, quality):
     """Encodes a new MP3 file"""
+    preset = 'standard'
+    if quality > 0 :
+      preset = 'cbr %(a)i' % {'a' : quality}
+    elif quality == -1 :
+      preset = 'medium'
+    elif quality == -2 :
+      preset = 'standard'
+    elif quality == -3 :
+      preset = 'extreme'
+    elif quality == -4 :
+      preset = 'insane'
+
     if MSWINDOWS:
-      command = 'lame.exe -m auto --preset cbr %(a)i "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>3){gsub(/[()%%|]/,\\" \\");if($1 != \\"\\") print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'lame.exe -m auto --preset %(a)s "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>3){gsub(/[()%%|]/,\\" \\");if($1 != \\"\\") print $2/100;fflush();}"' % {'a': preset, 'b': filename, 'c': newname}
     else:
-      command = "lame -m auto --preset cbr %(a)i '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>3){gsub(/[()%%|]/,\" \");if($1 != \"\") print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
+      command = "lame -m auto --preset %(a)s '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>3){gsub(/[()%%|]/,\" \");if($1 != \"\") print $2/100;fflush();}'" % {'a': preset, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
