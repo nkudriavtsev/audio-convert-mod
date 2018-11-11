@@ -542,6 +542,7 @@ class acmApp(interface.Controller):
     model.append(convert(formats.FORMATS['mpc'], 'mppdec', 'mppenc', 'mutagen'))
     model.append(convert(formats.FORMATS['ape'], 'mac', 'mac', 'mutagen'))
     model.append(convert(formats.FORMATS['aac'], 'faad', 'faac', 'mutagen'))
+    model.append(convert(formats.FORMATS['nero_aac'], 'neroAacDec', 'neroAacEnc', 'mutagen'))
     model.append(convert(formats.FORMATS['ac3'], 'a52dec', 'ffmpeg', _('N/A')))
     model.append(convert(formats.FORMATS['flac'], 'flac', 'flac', 'mutagen'))
     model.append(convert(formats.FORMATS['wv'], 'wavunpak', 'wavpack', 'mutagen'))

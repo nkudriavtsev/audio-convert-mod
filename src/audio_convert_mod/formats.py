@@ -570,6 +570,105 @@ class aac:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
+class nero_aac:
+  """The Nero AAC format class. Requires neroAacDec, neroAacEnc."""
+  def __init__(self):
+    """Initialize"""
+    self.__encode = False
+    self.__decode = False
+    self.__tags = False
+    self.extensions = ['m4a', 'aac', 'mp4']
+    self.check()
+    self.__qualities = [
+    ['5','~16 kbps'],
+    ['15','~33 kbps'],
+    ['25','~66 kbps'],
+    ['35','~100 kbps'],
+    ['45','~146 kbps'],
+    ['55','~192 kbps'],
+    ['65','~238 kbps'],
+    ['75','~285 kbps'],
+    ['85','~332 kbps'],
+    ['95','~381 kbps']
+                      ]
+
+  def check(self):
+    """Check if the required program(s) exist"""
+    if which('neroAacDec'):
+      self.__decode = True
+    else:
+      self.__decode = False
+    if which('neroAacEnc'):
+      self.__encode = True
+    else:
+      self.__encode = False
+    # mutagen supports aac/m4a tags
+    self.__tags = True
+
+  def get(self):
+    """Return all information on the format"""
+    return [self.__encode, self.__decode, self.__tags, self.__qualities]
+
+  def getTags(self, filename):
+    """Retrieves the metadata from filename"""
+    audiotags = MP4(filename)
+    # Map the iTunes MP4 atom names to our regular tag data.
+    tags = []
+    for item in ["\xa9nam", "\xa9ART", "\xa9alb", "\xa9day", "trkn", "\xa9gen", "\xa9cmt"]:
+      if not audiotags.has_key(item):
+        tags.append("")
+      else:
+        if type(audiotags[item]) == list: # dealing with a list - use first value
+          tags.append(str(audiotags[item][0]))
+        else: # strings
+          tags.append(str(audiotags[item]))
+        if item == "\xa9day":
+          # Do not include month, day, timezone, etc in year tag
+          tags[-1] = tags[-1].split('-')[0]
+        elif item == "trkn":
+          # Get the first item (track number) from the tuple's string representation 
+          tags[-1] = tags[-1].split(',')[0][1:]
+          
+    return tags
+    
+  def setTags(self, filename, tags):
+    """Sets the metadata on filename"""
+    audiotags = MP4(filename)
+    # Map our regular tag data to the iTunes MP4 atom names.
+    audiotags["\xa9nam"] = tags[0]
+    audiotags["\xa9ART"] = tags[1]
+    audiotags["\xa9alb"] = tags[2]
+    audiotags["\xa9day"] = tags[3]
+    # MP4 requires a tuple here - (track#,#tracks)
+    if type(tags[4]) == list and len(tags[4]) == 2:
+      audiotags["trkn"] = [tags[4]]
+    else:
+      audiotags["trkn"] = [(int(tags[4]), 0)]
+    audiotags["\xa9gen"] = tags[5]
+    audiotags["\xa9cmt"] = tags[6]
+    audiotags.save()
+
+  def decode(self, filename, newname):
+    """Decodes a AAC file with Nero decoder"""
+    if MSWINDOWS:
+      command = 'neroAacDec.exe -if "%(a)s" -of "%(b)s" 2>&1 | awk.exe -vRS="\\r" "$1 ~ /Processed/ {print $2/100};fflush();"' % {'a': filename, 'b': newname}
+    else:
+      command = "neroAacDec -if '%(a)s' -of '%(b)s' 2>&1 | awk -vRS='\\r' '$1 ~ /Processed/ {print $2/100};fflush();'" % {'a': filename, 'b': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    return sub, command
+
+  def encode(self, filename, newname, quality):
+    """Encodes a new AAC file with Nero encoder"""
+    if MSWINDOWS:
+      command = 'neroAacEnc.exe -q 0.%(a)02i -if "%(b)s" -of "%(c)s" 2>&1 | awk.exe -vRS="\\r" "$1 ~ /Processed/ {print $2/100};fflush();"' % {'a': quality, 'b': filename, 'c': newname}
+    else:
+      command = "neroAacEnc -q 0.%(a)02i -if '%(b)s' -of '%(c)s' 2>&1 | awk -vRS='\\r' '$1 ~ /Processed/ {print $2/100};fflush();'" % {'a': quality, 'b': filename, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    return sub, command
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 class mplayer:
   """MPlayer format class for some misc. mplayer-compatible filetypes"""
   def __init__(self):
@@ -754,7 +853,7 @@ class wv:
 # -----------------------------------------------------------------------------
 
 FORMATS = {}
-for format in [mp3(), ogg(), mpc(), ape(), aac(), ac3(), wv(), wav(), flac()]:
+for format in [mp3(), ogg(), mpc(), ape(), aac(), nero_aac(), ac3(), wv(), wav(), flac()]:
   FORMATS[format.__class__.__name__.lower()] = format
 
 def recheck():
@@ -768,6 +867,12 @@ def getFileType(path):
   for format in FORMATS.values():
     for extension in format.extensions:
       if fileExtension == extension:
+        if format.__class__.__name__.lower() == 'aac' and FORMATS['nero_aac'].get()[1] :
+          # make Nero decoder preferable if it is installed
+          format = FORMATS['nero_aac']
+        elif format.__class__.__name__.lower() == 'nero_aac' and not format.get()[1] :
+          # fall back to faad if there is no Nero decoder
+          format = FORMATS['aac'] 
         return format
   # unknown filetype!
   return False
