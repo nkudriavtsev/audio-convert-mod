@@ -43,7 +43,7 @@ if MSWINDOWS:
   os.environ['PATH'] += ";%s\\lib;%s\\bin;%s" % (gtkdir[0], gtkdir[0], INSTALL_DIR)
   _winreg.CloseKey(k)
 
-try:        
+try:
   import gtk
   import gobject
 except:
@@ -149,7 +149,7 @@ class acmApp(interface.Controller):
     """ Adds a file to the Select Files treeview """
     model = self.ui.main1FilesTreeview.get_model()
     # don't sort as we add
-    model.set_default_sort_func(lambda *args: -1) 
+    model.set_default_sort_func(lambda *args: -1)
     # don't refresh as we add
     self.ui.main1FilesTreeview.freeze_child_notify()
     # detach model
@@ -180,7 +180,7 @@ class acmApp(interface.Controller):
     # attach model
     self.ui.main1FilesTreeview.set_model(model)
     return errors
-  
+
   def showError(self, parent, header, text, details=''):
     """ Shows an error in the HIG-style error dialog """
     dialog = widgets.GenericDia(self.ui.errorDialog, _('Error'), parent)
@@ -193,7 +193,7 @@ class acmApp(interface.Controller):
     else:
       self.ui.errorDialogExpander.hide()
     dialog.runAndDestroy()
-  
+
   def showWarning(self, parent, header, text, details=''):
     """ Shows an error in the HIG-style error dialog """
     dialog = widgets.GenericDia(self.ui.warningDialog, _('Warning'), parent)
@@ -206,7 +206,7 @@ class acmApp(interface.Controller):
     else:
       self.ui.warningDialogExpander.hide()
     dialog.runAndDestroy()
-  
+
   def __init__(self, verbose, paths):
     """ Initialize a new instance. """
     interface.Controller.__init__(self, '%s/audio-convert-mod.glade' % INSTALL_DIR, 'main')
@@ -236,7 +236,7 @@ class acmApp(interface.Controller):
     except:
       self.PYNOTIFY_AVAIL = False
       self.ui.prefsNotifyInTrayCheck.set_label(_('Blink the tray icon to notify me of important status changes'))
-    
+
     # Transient Windows
     self.ui.about.set_transient_for(self.ui.main)
     self.ui.license.set_transient_for(self.ui.about)
@@ -245,7 +245,7 @@ class acmApp(interface.Controller):
     self.ui.features.set_transient_for(self.ui.main)
     self.ui.tags.set_transient_for(self.ui.main)
     self.ui.prefs.set_transient_for(self.ui.main)
-    
+
     # liststore
     liststore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
     self.ui.main2QualityCombobox.set_model(liststore)
@@ -253,7 +253,7 @@ class acmApp(interface.Controller):
     self.ui.main2QualityCombobox.clear()
     self.ui.main2QualityCombobox.pack_start(cell, True)
     self.ui.main2QualityCombobox.add_attribute(cell, 'text', 1)
-    
+
     import pango
     # Selected Files Treeview
     liststore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
@@ -290,7 +290,7 @@ class acmApp(interface.Controller):
     target = [('text/uri-list', 0, 0)]
     self.ui.main1FilesTreeview.drag_dest_set(gtk.DEST_DEFAULT_ALL, target, gtk.gdk.ACTION_COPY)
     # /Selected Files Treeview
-    
+
     # Formats treeview
     liststore = gtk.ListStore(gobject.TYPE_STRING,
                               gobject.TYPE_STRING, gobject.TYPE_STRING,
@@ -345,7 +345,7 @@ class acmApp(interface.Controller):
     self.ui.featuresFeaturesTreeview.set_reorderable(False)
     liststore.set_sort_column_id(0, gtk.SORT_ASCENDING)
     # /Formats treeview
-    
+
     self.processId = None
     # Labels, defaults
     self.ui.aboutVersionLabel.set_text('<span size="xx-large" weight="bold">audio-convert-mod %s</span>' % audio_convert_mod.__version__)
@@ -355,7 +355,7 @@ class acmApp(interface.Controller):
       self.ui.prefsFileManagerIntegrationFrame.set_sensitive(False)
     self.prepareForNewConversion()
     # /Set defaults
-    
+
     self._setupTrayIcon()
     if int(prefs.get('Preferences', 'ShowTrayIcon')) == 1:
       self.trayicon.set_visible(True)
@@ -398,7 +398,7 @@ class acmApp(interface.Controller):
                 paths.append(os.path.join(path, filename))
     self.addToSelectFilesFilesTreeview(paths)
     context.finish(True, False, time)
-  
+
   def prepareForNewConversion(self):
     """ Prepares the program for a new conversion """
     self.ui.mainControlNotebook.set_current_page(0)
@@ -409,7 +409,7 @@ class acmApp(interface.Controller):
     self.ui.featuresFeaturesTreeview.get_model().clear()
     self.checkFormats()
     self.refreshFeatures()
-  
+
   def _setupTrayIcon(self):
     """ Sets up the tray icon """
     pix = self.ui.main.render_icon(gtk.STOCK_CONVERT, gtk.ICON_SIZE_MENU)
@@ -464,7 +464,7 @@ class acmApp(interface.Controller):
     self.ui.trayMenu.popup(None, None, menu_pos, 0, gtk.get_current_event_time())
     if self.trayicon.get_blinking():
       self.trayicon.set_blinking(False)
-        
+
 
   def _Popup(self, status, button, time):
     """ Popup the menu at the right position """
@@ -543,6 +543,7 @@ class acmApp(interface.Controller):
     model.append(convert(formats.FORMATS['ape'], 'mac', 'mac', 'mutagen'))
     model.append(convert(formats.FORMATS['aac'], 'faad', 'faac', 'mutagen'))
     model.append(convert(formats.FORMATS['nero_aac'], 'neroAacDec', 'neroAacEnc', 'mutagen'))
+    model.append(convert(formats.FORMATS['fdkaac'], 'faad', 'fdkaac', 'mutagen'))
     model.append(convert(formats.FORMATS['ac3'], 'a52dec', 'ffmpeg', _('N/A')))
     model.append(convert(formats.FORMATS['flac'], 'flac', 'flac', 'mutagen'))
     model.append(convert(formats.FORMATS['wv'], 'wavunpak', 'wavpack', 'mutagen'))
@@ -583,7 +584,7 @@ class acmApp(interface.Controller):
     """ File > Show Features """
     self.refreshFeatures()
     self.ui.features.show()
-  
+
   def remove_filemanager_integration_helper(self, paths):
     """ Helper, holds common parts of the remove integration functions """
     oldLocations = ['%s/.audio-convert-mod/acm-script.sh' % USERHOME,
@@ -602,22 +603,22 @@ class acmApp(interface.Controller):
         except Exception, error:
           self.logger.logmsg("WARNING", _('Could not remove directory %(a)s: %(b)s') % {'a': i, 'b': error})
     return True
-  
+
   def remove_gnome_filemanager_integration(self):
     """ Removes all gnome user scripts/file manager integration """
     self.remove_filemanager_integration_helper(['%s/.gnome2/nautilus-scripts/audio-convert-mod/' % USERHOME])
-  
+
   def remove_kde3_filemanager_integration(self):
     """ Removes all kde3 user scripts/file manager integration """
     paths = ['%s/.kde/share/apps/konqueror/servicemenus/audio-convert-mod.desktop' % USERHOME,
              '%s/.kde/share/apps/konqueror/servicemenus/audio-convert-mod-nofolder.desktop' % USERHOME,
              '%s/.kde/share/apps/konqueror/servicemenus/audio-convert-mod-kde.desktop' % USERHOME]
     self.remove_filemanager_integration_helper(paths)
-  
+
   def remove_kde4_filemanager_integration(self):
     """ Removes all kde4 user scripts/file manager integration """
     self.remove_filemanager_integration_helper(['%s/.kde/share/kde4/services/ServiceMenus/audio-convert-mod-kde.desktop' % USERHOME])
-  
+
   def install_gnome_filemanager_integration(self):
     """ Adds integration to Nautilus in GNOME """
     self.remove_gnome_filemanager_integration()
@@ -635,7 +636,7 @@ class acmApp(interface.Controller):
       self.logger.logmsg("WARNING", _('Skipping GNOME file manager integration: nautilus-scripts directory not found'))
       return -2
     return True
-  
+
   def install_kde3_filemanager_integration(self):
     """ Adds integration to Konqueor in KDE3 """
     self.remove_kde3_filemanager_integration()
@@ -688,7 +689,7 @@ class acmApp(interface.Controller):
       self.ui.prefsPauseOnErrorsCheck.set_active(True)
     else:
       self.ui.prefsPauseOnErrorsCheck.set_active(False)
-    
+
     # Gnome FMI
     self.ui.prefsIntegrateWithGNOMECheck.set_active(
         os.path.exists('%s/.gnome2/nautilus-scripts/audio-convert-mod/%s' % (USERHOME, _('Convert Files')))
@@ -701,9 +702,9 @@ class acmApp(interface.Controller):
         os.path.exists('%s/.kde/share/kde4/services/ServiceMenus/audio-convert-mod-kde.desktop' % USERHOME)
                                                   )
     self.ui.prefsTempFolderEntry.set_text(config.PreferencesConf().get('Preferences', 'TemporaryDirectory'))
-    
+
     self.ui.prefs.show()
-  
+
   def on_prefsTempFolderBrowseButton_clicked(self, widget):
     """ Browse for a temp folder """
     pathBrowser = widgets.PathBrowser(self.ui.chooser, self.ui.prefs)
@@ -716,7 +717,7 @@ class acmApp(interface.Controller):
     if response != gtk.RESPONSE_OK or not paths:
       return
     self.ui.prefsTempFolderEntry.set_text(paths[0])
-    
+
 
   ## HELP MENU ##
 
@@ -756,26 +757,26 @@ class acmApp(interface.Controller):
       prefs.set('Preferences', 'PauseOnErrors', 1)
     else:
       prefs.set('Preferences', 'PauseOnErrors', 0)
-  
+
   def on_prefsIntegrateWithGNOMECheck_clicked(self, widget):
     if self.ui.prefsIntegrateWithGNOMECheck.get_active():
       self.install_gnome_filemanager_integration()
     else:
       self.remove_gnome_filemanager_integration()
-  
+
   def on_prefsIntegrateWithKDE3Check_clicked(self, widget):
     if self.ui.prefsIntegrateWithKDE3Check.get_active():
       self.install_kde3_filemanager_integration()
     else:
       self.remove_kde3_filemanager_integration()
-    
-  
+
+
   def on_prefsIntegrateWithKDE4Check_clicked(self, widget):
     if self.ui.prefsIntegrateWithKDE4Check.get_active():
       self.install_kde4_filemanager_integration()
     else:
       self.remove_kde4_filemanager_integration()
-  
+
   def on_prefsCloseButton_clicked(self, widget):
     """ close prefs """
     tempdir = self.ui.prefsTempFolderEntry.get_text()
@@ -797,16 +798,16 @@ class acmApp(interface.Controller):
 
   def on_aboutLicenseButton_clicked(self, widget):
     self.ui.license.show()
-  
+
   def on_aboutCreditsButton_clicked(self, widget):
     self.ui.credits.show()
-    
+
   def on_creditsCloseButton_clicked(self, widget):
     self.ui.credits.hide()
-  
+
   def on_licenseCloseButton_clicked(self, widget):
     self.ui.license.hide()
-  
+
   def on_aboutCloseButton_clicked(self, widget):
     self.ui.license.hide()
     self.ui.credits.hide()
@@ -822,7 +823,7 @@ class acmApp(interface.Controller):
     """ Refresh features """
     self.checkFormats()
     self.refreshFeatures()
-  
+
   ## MAIN ##
 
   def on_mainBackButton_clicked(self, widget):
@@ -886,7 +887,7 @@ class acmApp(interface.Controller):
           self.ui.main2FormatCombobox.set_active(0)
           self.ui.main2QualityCombobox(0)
           self.ui.main2ExtensionCombobox.set_active(0)
-        
+
         self.ui.__getattr__('main2ExistsRadio%s' % whenExists).set_active(True)
         self.ui.__getattr__('main2MetatagRadio%s' % metadata).set_active(True)
         self.ui.__getattr__('main2UponSuccessRadio%s' % successfulConversion).set_active(True)
@@ -1102,7 +1103,7 @@ class acmApp(interface.Controller):
       self.ui.main3FileProgress.set_fraction(float(self.fraction))
       self.ui.main3FileProgress.set_text('%i%%' % int(float(self.fraction)*100))
       return True
-    
+
     def nextFile(currFile):
       self.ui.main3FileProgress.set_fraction(float(1))
       self.ui.main3FileProgress.set_text('100%')
@@ -1110,7 +1111,7 @@ class acmApp(interface.Controller):
       while gtk.events_pending():
         gtk.main_iteration()
       return currFile+1
-    
+
     def escape(name):
       """ escape special characters """
       return '&amp;'.join(name.split('&'))
@@ -1158,9 +1159,9 @@ class acmApp(interface.Controller):
     self.ui.main3ConvertToLabel.set_text('%(a)s @ %(b)s' % {'a': outputFormat, 'b': quality})
     # numberic quality only
     quality = int(self.ui.main2QualityCombobox.get_model().get_value(iter, 0))
-    
+
     tempdir = config.PreferencesConf().get('Preferences', 'TemporaryDirectory')
-    
+
     # setup
     files = []
     model = self.ui.main1FilesTreeview.get_model()
@@ -1186,12 +1187,12 @@ class acmApp(interface.Controller):
         self.encodeonly = True
       # update file labels
       refreshCurrentFile(self, i, currFile, total)
-      
+
       if inputFormat == outputFormat:
         self.logger.logmsg("DEBUG", _('Input format == output format! Skipping %s.' % i))
         currFile = nextFile(currFile)
         continue
-      
+
       #decode
       tags = None
       if outputFormatObject.get()[2] and inputFormatObject.get()[2]: # only if tags are supported on both sides
@@ -1250,7 +1251,7 @@ class acmApp(interface.Controller):
         if inputFormat == 'AC3': # a52dec doesn't support progress
           self.fraction = -1
           progressBar.startPulse()
-          while sub.poll() == None:  
+          while sub.poll() == None:
             while gtk.events_pending():
               gtk.main_iteration()
             time.sleep(0.01)
@@ -1362,7 +1363,7 @@ class acmApp(interface.Controller):
         self.setStatus(_('Setting tags/metadata'))
         if tags and outputFormatObject.get()[2]: # if tags are supported:
           outputFormatObject.setTags(newname, tags)
-        
+
         if sub.poll() == 0:
           if os.path.exists(i):
             if self.ui.main2UponSuccessRadio2.get_active():
@@ -1389,7 +1390,7 @@ class acmApp(interface.Controller):
               self.logger.logmsg("DEBUG", _("Converted file `%s\' was skipped, but could not be removed! Ignoring.") % i)
         else:
           self.logger.logmsg("ERROR", _("Bad exit status %(a)s on conversion `%(b)s\', skipping (re)move options if any") % {'a': sub.poll(), 'b': i})
-      
+
       # setup for next file
       self.logger.logmsg("DEBUG", _("Cleaning up"))
       self.setStatus(_('Cleanup'))
@@ -1446,7 +1447,7 @@ class acmApp(interface.Controller):
     self.ui.mainBackButton.set_sensitive(True)
     self.ui.mainNextButton.set_sensitive(True)
     self.prepareForNewConversion()
-  
+
   def on_main4QuitButton_clicked(self, widget):
     """ Quit """
     self.main_close(None)
@@ -1456,7 +1457,7 @@ class acmApp(interface.Controller):
 # Only if we're in main execution
 if __name__ == "__main__":
   verbose = False
-  
+
   try:
     avalableOptions = ["help", "verbose"]
     # letter = plain options, letter: = option with an arg
@@ -1464,7 +1465,7 @@ if __name__ == "__main__":
   except (getopt.GetoptError), error:
     usage(str(error))
     sys.exit(1)
-  
+
   # Remove options from paths
   paths = sys.argv[1:] # includes everything
   for opt in opts:
@@ -1473,7 +1474,7 @@ if __name__ == "__main__":
         paths.remove(opt2) # removes valid options from paths
       except:
         pass
-  
+
   # Parse args, take action
   if opts:
     for (opt, value) in opts:
@@ -1489,4 +1490,3 @@ if __name__ == "__main__":
   except KeyboardInterrupt:
     # ctrl+c?
     MainApp.main_close(None)
-

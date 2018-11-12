@@ -244,7 +244,7 @@ class flac:
   def get(self):
     """Return all information on the format"""
     return [self.__encode, self.__decode, self.__tags, self.__qualities]
-    
+
   def getTags(self, filename):
     """Retrieves the metadata from filename"""
     audiotags = FLAC(filename)
@@ -254,7 +254,7 @@ class flac:
     """Sets the metadata on filename"""
     audiotags = FLAC(filename)
     saveTrackInfo(audiotags, tags)
-    
+
   def decode(self, filename, newname):
     """Decodes a FLAC file"""
     if MSWINDOWS:
@@ -316,12 +316,12 @@ class ogg:
     """Retrieves the metadata from filename"""
     audiotags = OggVorbis(filename)
     return getTrackInfo(audiotags)
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     audiotags = OggVorbis(filename)
     saveTrackInfo(audiotags, tags)
-    
+
   def decode(self, filename, newname):
     """Decodes a OGG file"""
     if MSWINDOWS:
@@ -386,7 +386,7 @@ class mpc:
     """Retrieves the metadata from filename"""
     audiotags = Musepack(filename)
     return getTrackInfo(audiotags)
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     audiotags = Musepack(filename)
@@ -448,7 +448,7 @@ class ape:
     """Retrieves the metadata from filename"""
     audiotags = APEv2(filename)
     return getTrackInfo(audiotags)
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     audiotags = APEv2(filename)
@@ -527,11 +527,11 @@ class aac:
           # Do not include month, day, timezone, etc in year tag
           tags[-1] = tags[-1].split('-')[0]
         elif item == "trkn":
-          # Get the first item (track number) from the tuple's string representation 
+          # Get the first item (track number) from the tuple's string representation
           tags[-1] = tags[-1].split(',')[0][1:]
-          
+
     return tags
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     audiotags = MP4(filename)
@@ -626,11 +626,11 @@ class nero_aac:
           # Do not include month, day, timezone, etc in year tag
           tags[-1] = tags[-1].split('-')[0]
         elif item == "trkn":
-          # Get the first item (track number) from the tuple's string representation 
+          # Get the first item (track number) from the tuple's string representation
           tags[-1] = tags[-1].split(',')[0][1:]
-          
+
     return tags
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     audiotags = MP4(filename)
@@ -669,6 +669,112 @@ class nero_aac:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
+class fdkaac:
+  """The Fraunhofer AAC format class. Requires faad, fdkaac."""
+  def __init__(self):
+    """Initialize"""
+    self.__encode = False
+    self.__decode = False
+    self.__tags = False
+    self.extensions = ['m4a', 'aac', 'mp4']
+    self.check()
+    self.__qualities = [
+    ['96','CBR 96 kbps'],
+    ['128','CBR 128 kbps'],
+    ['160','CBR 160 kbps'],
+    ['192','CBR 192 kbps'],
+    ['256','CBR 256 kbps'],
+    ['320','CBR 320 kbps'],
+    ['-1', 'VBR ~40 kbps'],
+    ['-2', 'VBR ~64 kbps'],
+    ['-3', 'VBR ~96 kbps'],
+    ['-4', 'VBR ~128 kbps'],
+    ['-5', 'VBR ~182 kbps']
+                      ]
+
+  def check(self):
+    """Check if the required program(s) exist"""
+    if which('faad'):
+      self.__decode = True
+    else:
+      self.__decode = False
+    if which('fdkaac'):
+      self.__encode = True
+    else:
+      self.__encode = False
+    # mutagen supports aac/m4a tags
+    self.__tags = True
+
+  def get(self):
+    """Return all information on the format"""
+    return [self.__encode, self.__decode, self.__tags, self.__qualities]
+
+  def getTags(self, filename):
+    """Retrieves the metadata from filename"""
+    audiotags = MP4(filename)
+    # Map the iTunes MP4 atom names to our regular tag data.
+    tags = []
+    for item in ["\xa9nam", "\xa9ART", "\xa9alb", "\xa9day", "trkn", "\xa9gen", "\xa9cmt"]:
+      if not audiotags.has_key(item):
+        tags.append("")
+      else:
+        if type(audiotags[item]) == list: # dealing with a list - use first value
+          tags.append(str(audiotags[item][0]))
+        else: # strings
+          tags.append(str(audiotags[item]))
+        if item == "\xa9day":
+          # Do not include month, day, timezone, etc in year tag
+          tags[-1] = tags[-1].split('-')[0]
+        elif item == "trkn":
+          # Get the first item (track number) from the tuple's string representation
+          tags[-1] = tags[-1].split(',')[0][1:]
+
+    return tags
+
+  def setTags(self, filename, tags):
+    """Sets the metadata on filename"""
+    audiotags = MP4(filename)
+    # Map our regular tag data to the iTunes MP4 atom names.
+    audiotags["\xa9nam"] = tags[0]
+    audiotags["\xa9ART"] = tags[1]
+    audiotags["\xa9alb"] = tags[2]
+    audiotags["\xa9day"] = tags[3]
+    # MP4 requires a tuple here - (track#,#tracks)
+    if type(tags[4]) == list and len(tags[4]) == 2:
+      audiotags["trkn"] = [tags[4]]
+    else:
+      audiotags["trkn"] = [(int(tags[4]), 0)]
+    audiotags["\xa9gen"] = tags[5]
+    audiotags["\xa9cmt"] = tags[6]
+    audiotags.save()
+
+  def decode(self, filename, newname):
+    """Decodes a AAC file"""
+    if MSWINDOWS:
+      command = 'faad.exe "%(a)s" -o "%(b)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $1/100;fflush();}"' % {'a': filename, 'b': newname}
+    else:
+      command = "faad '%(a)s' -o '%(b)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $1/100;fflush();}'" % {'a': filename, 'b': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    return sub, command
+
+  def encode(self, filename, newname, quality):
+    """Encodes a new AAC file"""
+    preset = '-b256'
+    if quality > 0 :
+      preset = '-b%(a)i' % {'a' : quality}
+    else:
+      preset = '-m%(a)i' % {'a' : -quality}
+
+    if MSWINDOWS:
+      command = 'fdkaac.exe -f0 %(a)s "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $3/100;fflush();}"' % {'a': preset, 'b': filename, 'c': newname}
+    else:
+      command = "fdkaac -f0 %(a)s '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $3/100;fflush();}'" % {'a': preset, 'b': filename, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    return sub, command
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
 class mplayer:
   """MPlayer format class for some misc. mplayer-compatible filetypes"""
   def __init__(self):
@@ -697,11 +803,11 @@ class mplayer:
   def getTags(self, filename):
     """Retrieves the metadata from filename"""
     return None
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     return
-  
+
   # FIXME: Finish this
   def decode(self, filename, newname):
     """Decodes a mplayer-playable file"""
@@ -753,7 +859,7 @@ class ac3:
   def getTags(self, filename):
     """Retrieves the metadata from filename"""
     return None
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     if MSWINDOWS:
@@ -818,7 +924,7 @@ class wv:
     """Retrieves the metadata from filename"""
     audiotags = WavPack(filename)
     return getTrackInfo(audiotags)
-    
+
   def setTags(self, filename, tags):
     """Sets the metadata on filename"""
     audiotags = WavPack(filename)
@@ -853,7 +959,7 @@ class wv:
 # -----------------------------------------------------------------------------
 
 FORMATS = {}
-for format in [mp3(), ogg(), mpc(), ape(), aac(), nero_aac(), ac3(), wv(), wav(), flac()]:
+for format in [mp3(), ogg(), mpc(), ape(), aac(), nero_aac(), fdkaac(), ac3(), wv(), wav(), flac()]:
   FORMATS[format.__class__.__name__.lower()] = format
 
 def recheck():
@@ -872,7 +978,7 @@ def getFileType(path):
           format = FORMATS['nero_aac']
         elif format.__class__.__name__.lower() == 'nero_aac' and not format.get()[1] :
           # fall back to faad if there is no Nero decoder
-          format = FORMATS['aac'] 
+          format = FORMATS['aac']
         return format
   # unknown filetype!
   return False
@@ -891,4 +997,3 @@ def resample(filename, samplerate):
   command = "echo 0;ffmpeg -i '%(a)s' -ar %(b)s -y '%(c)s' 2>&1 | awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1;fflush();}'" % {'a': filename, 'b': samplerate, 'c': tmpfile}
   sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
   return sub, command
-
