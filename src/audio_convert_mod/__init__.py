@@ -21,7 +21,7 @@ audio-convert-mod package initialization
 
 __author__ = "Stewart Adam <s.adam at diffingo.com>"
 __status__ = "beta"
-__version__ = "3.46.0b"
+__version__ = "3.47.0"
 __license__ = "GNU GPLv2+"
 
 import exceptions
@@ -59,7 +59,7 @@ def CheckPermsWrite(path):
   if not os.path.exists(path):
     path = os.path.dirname(path)
   return os.access(path, os.W_OK)
-  
+
 class FuncAsThread(Thread):
   """Run a function as a new thread."""
   def __init__(self, functorun, args):
@@ -69,7 +69,7 @@ class FuncAsThread(Thread):
     self.retval = None
     self.traceback = None
     self.exception = None
-    
+
   def run(self):
     try:
       retval = self.__functorun(*self.__args)
@@ -98,7 +98,7 @@ def liststoreIntoArray(liststore):
   """ Turn a liststore into an array filled with it's rows and columns """
   def callback(model, path, iter, user_data):
     """ Just returns the contents of the row as a list """
-    noColumns, allRows = user_data[0], user_data[1] 
+    noColumns, allRows = user_data[0], user_data[1]
     currColumn = 0
     theRow = []
     # Append each value/column into the row list
@@ -145,4 +145,3 @@ def remove_diacritics(string):
   """ Removed diacritics from the string """
   reCombining = re.compile(u'[\u0300-\u036f\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]', re.U)
   return reCombining.sub('', unicodedata.normalize('NFD', unicode(string, sys.stdin.encoding)) )
-
