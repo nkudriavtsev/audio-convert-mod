@@ -46,6 +46,7 @@ from mutagen.easyid3 import EasyID3
 from mutagen.mp3 import MP3
 from mutagen.flac import FLAC
 from mutagen.oggvorbis import OggVorbis
+from mutagen.oggopus import OggOpus
 from mutagen.musepack import Musepack
 from mutagen.apev2 import APEv2
 from mutagen.mp4 import MP4
@@ -337,6 +338,74 @@ class ogg:
       command = 'oggenc.exe -b %(a)i "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
     else:
       command = "oggenc -b %(a)i '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    return sub, command
+
+# -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
+
+class opus:
+  """The OPUS format class. Requires ogg{enc,dec,info} (opus-tools)"""
+  def __init__(self):
+    """Initialize"""
+    self.__encode = False
+    self.__decode = False
+    self.__tags = False
+    self.check()
+    self.extensions = ['opus']
+    self.__qualities = [
+    ['48', '48 kbps'],
+    ['56', '56 kbps'],
+    ['96', '96 kbps'],
+    ['128', '128 kbps'],
+    ['160', '160 kbps'],
+    ['192', '192 kbps'],
+    ['256', '256 kbps'],
+    ['320', '320 kbps']
+                       ]
+
+  def check(self):
+    """Check if the required program(s) exist"""
+    if which('opusdec'):
+      self.__decode = True
+    else:
+      self.__decode = False
+    if which('opusenc'):
+      self.__encode = True
+    else:
+      self.__encode = False
+    # mutagen supports vorbis/flac tags
+    self.__tags = True
+
+  def get(self):
+    """Return all information on the format"""
+    return [self.__encode, self.__decode, self.__tags, self.__qualities]
+
+  def getTags(self, filename):
+    """Retrieves the metadata from filename"""
+    audiotags = OggOpus(filename)
+    return getTrackInfo(audiotags)
+
+  def setTags(self, filename, tags):
+    """Sets the metadata on filename"""
+    audiotags = OggOpus(filename)
+    saveTrackInfo(audiotags, tags)
+
+  def decode(self, filename, newname):
+    """Decodes a OPUS file"""
+    if MSWINDOWS:
+      command = 'opusdec.exe "%(a)s" "%(b)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': filename, 'b': newname}
+    else:
+      command = "opusdec '%(a)s' '%(b)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': filename, 'b': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    return sub, command
+
+  def encode(self, filename, newname, quality):
+    """Encodes a new OGG file"""
+    if MSWINDOWS:
+      command = 'opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+    else:
+      command = "opusenc --bitrate %(a)i '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
@@ -959,7 +1028,7 @@ class wv:
 # -----------------------------------------------------------------------------
 
 FORMATS = {}
-for format in [mp3(), ogg(), mpc(), ape(), aac(), nero_aac(), fdkaac(), ac3(), wv(), wav(), flac()]:
+for format in [mp3(), ogg(), mpc(), ape(), aac(), nero_aac(), fdkaac(), opus(), ac3(), wv(), wav(), flac()]:
   FORMATS[format.__class__.__name__.lower()] = format
 
 def recheck():
