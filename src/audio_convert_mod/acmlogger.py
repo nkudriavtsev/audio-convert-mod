@@ -19,6 +19,7 @@
 The audio-convert-mod logger
 Based on fwbackups's fwlogger.py file (2009-07-29)
 """
+from __future__ import print_function
 import datetime
 import logging
 import types
@@ -66,8 +67,8 @@ class acmLogger(logging.Logger):
       loghandler.setFormatter(logformatter)
       # add handler to logger
       self.addHandler(loghandler)
-    except Exception, error:
-      print _('Could not set up the logger!')
+    except Exception as error:
+      print(_('Could not set up the logger!'))
       raise
 
   def setPrintToo(self, printToo):
@@ -105,7 +106,7 @@ class acmLogger(logging.Logger):
       # pull in & execute the appropriate function
       getattr(self, severity.lower())(entry)
       if self.__printToo:
-        print entry
+        print(entry)
       for i in self.__functions:
         i(severity.lower(), entry)
 

@@ -18,7 +18,10 @@
 """
 Configuration classes for audio-convert-mod
 """
-import ConfigParser
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+import configparser
 import os
 import audio_convert_mod
 from audio_convert_mod.const import *
@@ -36,24 +39,24 @@ def initConfigDir():
   configDir = os.path.normpath('%s/.audio-convert-mod' % USERHOME)
   if not os.path.exists(configDir):
     try:
-      os.mkdir(configDir, 0755)
-    except OSError, error:
+      os.mkdir(configDir, 0o755)
+    except OSError as error:
       raise ConfigError(_('Could not create configuration directory: %s' % error))
       sys.exit(1)
   elif not audio_convert_mod.CheckPerms(configDir):
     raise ConfigError(_('You do not have read and write permissions to `%s\'.') % configDir)
     sys.exit(1)
 
-class ConfigFile(ConfigParser.ConfigParser):
+class ConfigFile(configparser.ConfigParser):
   """ A more sane ConfigParser. It commits changes immediately,
     and also re-parses after each action so
     what-you-see-is-what's-in-the-file.
   """
   # Basic setup.
   def __init__(self, conffile, create=False):
-    ConfigParser.ConfigParser.__init__(self)
-    self.config = ConfigParser.ConfigParser()
-    ConfigParser.ConfigParser.optionxform = self.optionxform
+    configparser.ConfigParser.__init__(self)
+    self.config = configparser.ConfigParser()
+    configparser.ConfigParser.optionxform = self.optionxform
     self.conffile = conffile
     self.create = create
     # Finally...

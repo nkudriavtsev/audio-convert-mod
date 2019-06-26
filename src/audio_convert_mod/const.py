@@ -19,10 +19,12 @@
 """
 All constants/shared functions in the program
 """
+from future import standard_library
+standard_library.install_aliases()
 import os
 import sys
 import getpass
-import ConfigParser
+import configparser
 
 MSWINDOWS = sys.platform.startswith("win")
 if MSWINDOWS:

@@ -19,12 +19,15 @@
 audio-convert-mod package initialization
 """
 
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
 __author__ = "Stewart Adam <s.adam at diffingo.com>"
 __status__ = "beta"
 __version__ = "3.47.0"
 __license__ = "GNU GPLv2+"
 
-import exceptions
+#import exceptions
 import os
 import re
 import sys
@@ -137,11 +140,11 @@ def liststoreIndex(liststore, text):
   return liststoreArray, arrayIndex(liststoreArray, text)
 
 def set_text_markup(label, text):
-  """ set a gtk.Label's text with markup """
+  """ set a Gtk.Label's text with markup """
   label.set_text(text)
   label.set_use_markup(True)
 
 def remove_diacritics(string):
   """ Removed diacritics from the string """
   reCombining = re.compile(u'[\u0300-\u036f\u1dc0-\u1dff\u20d0-\u20ff\ufe20-\ufe2f]', re.U)
-  return reCombining.sub('', unicodedata.normalize('NFD', unicode(string, sys.stdin.encoding)) )
+  return reCombining.sub('', unicodedata.normalize('NFD', str(string, sys.stdin.encoding)) )

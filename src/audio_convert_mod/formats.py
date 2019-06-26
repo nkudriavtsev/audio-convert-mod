@@ -34,6 +34,8 @@ the new format functions.
    only double quotes.
 """
 
+from builtins import str
+from builtins import object
 import os
 import subprocess
 from audio_convert_mod.i18n import _
@@ -62,14 +64,14 @@ def getTrackInfo(audiotags):
   tags = []
   for item in ["title", "artist", "album", "date", "tracknumber", "genre", "comment"]:
     try:
-      if not audiotags.has_key(item):
+      if item not in audiotags:
         tags.append("")
       else:
         if type(audiotags[item]) == list: # dealing with a list - use first value
           tags.append(str(audiotags[item][0]))
         else: # strings
           tags.append(str(audiotags[item]))
-    except Exception, error:
+    except Exception as error:
       tags.append("")
   return tags
 
@@ -84,7 +86,7 @@ def saveTrackInfo(audiotags, tags):
   audiotags["comment"] = tags[6]
   audiotags.save()
 
-class wav:
+class wav(object):
   """The WAV format class."""
   def __init__(self):
     """Initialize"""
@@ -118,7 +120,7 @@ class wav:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class mp3:
+class mp3(object):
   """The MP3 format class. Requires lame."""
   def __init__(self):
     """Initialize"""
@@ -216,7 +218,7 @@ class mp3:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class flac:
+class flac(object):
   """The FLAC format class. Requires flac."""
   def __init__(self):
     """Initialize"""
@@ -277,7 +279,7 @@ class flac:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class ogg:
+class ogg(object):
   """The OGG format class. Requires ogg{enc,dec,info} (vorbis-tools)"""
   def __init__(self):
     """Initialize"""
@@ -344,7 +346,7 @@ class ogg:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class opus:
+class opus(object):
   """The OPUS format class. Requires ogg{enc,dec,info} (opus-tools)"""
   def __init__(self):
     """Initialize"""
@@ -412,7 +414,7 @@ class opus:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class mpc:
+class mpc(object):
   """The MPC format class. Requires mpp{dec,enc} (musepack-tools)"""
   def __init__(self):
     """Initialize"""
@@ -483,7 +485,7 @@ class mpc:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class ape:
+class ape(object):
   """The Monkey's Audio format class. Requires mac."""
   def __init__(self):
     """Initialize"""
@@ -544,7 +546,7 @@ class ape:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class aac:
+class aac(object):
   """The AAC format class. Requires faad, faac."""
   def __init__(self):
     """Initialize"""
@@ -585,7 +587,7 @@ class aac:
     # Map the iTunes MP4 atom names to our regular tag data.
     tags = []
     for item in ["\xa9nam", "\xa9ART", "\xa9alb", "\xa9day", "trkn", "\xa9gen", "\xa9cmt"]:
-      if not audiotags.has_key(item):
+      if item not in audiotags:
         tags.append("")
       else:
         if type(audiotags[item]) == list: # dealing with a list - use first value
@@ -639,7 +641,7 @@ class aac:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class nero_aac:
+class nero_aac(object):
   """The Nero AAC format class. Requires neroAacDec, neroAacEnc."""
   def __init__(self):
     """Initialize"""
@@ -684,7 +686,7 @@ class nero_aac:
     # Map the iTunes MP4 atom names to our regular tag data.
     tags = []
     for item in ["\xa9nam", "\xa9ART", "\xa9alb", "\xa9day", "trkn", "\xa9gen", "\xa9cmt"]:
-      if not audiotags.has_key(item):
+      if item not in audiotags:
         tags.append("")
       else:
         if type(audiotags[item]) == list: # dealing with a list - use first value
@@ -738,7 +740,7 @@ class nero_aac:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class fdkaac:
+class fdkaac(object):
   """The Fraunhofer AAC format class. Requires faad, fdkaac."""
   def __init__(self):
     """Initialize"""
@@ -784,7 +786,7 @@ class fdkaac:
     # Map the iTunes MP4 atom names to our regular tag data.
     tags = []
     for item in ["\xa9nam", "\xa9ART", "\xa9alb", "\xa9day", "trkn", "\xa9gen", "\xa9cmt"]:
-      if not audiotags.has_key(item):
+      if item not in audiotags:
         tags.append("")
       else:
         if type(audiotags[item]) == list: # dealing with a list - use first value
@@ -844,7 +846,7 @@ class fdkaac:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class mplayer:
+class mplayer(object):
   """MPlayer format class for some misc. mplayer-compatible filetypes"""
   def __init__(self):
     """Initialize"""
@@ -890,7 +892,7 @@ class mplayer:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class ac3:
+class ac3(object):
   """a52dec >> AC3"""
   def __init__(self):
     """Initialize"""
@@ -957,7 +959,7 @@ class ac3:
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class wv:
+class wv(object):
   """The wavpack format class. Requires wvunpack, wavpack (wavpack)"""
   def __init__(self):
     """Initialize"""
@@ -1033,13 +1035,13 @@ for format in [mp3(), ogg(), mpc(), ape(), aac(), nero_aac(), fdkaac(), opus(), 
 
 def recheck():
   """Recheck all formats"""
-  for format in FORMATS.values():
+  for format in list(FORMATS.values()):
     format.check()
 
 def getFileType(path):
   """Return the file type based on extension"""
   fileExtension = path.split('.')[-1].lower()
-  for format in FORMATS.values():
+  for format in list(FORMATS.values()):
     for extension in format.extensions:
       if fileExtension == extension:
         if format.__class__.__name__.lower() == 'aac' and FORMATS['nero_aac'].get()[1] :

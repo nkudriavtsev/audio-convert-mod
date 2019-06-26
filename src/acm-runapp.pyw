@@ -19,6 +19,11 @@
 """
 Puts it all together.
 """
+from __future__ import print_function
+from future import standard_library
+standard_library.install_aliases()
+from builtins import str
+from builtins import chr
 import datetime
 import getopt
 import os
@@ -32,23 +37,23 @@ from audio_convert_mod.const import *
 
 if MSWINDOWS:
   # Fetchs gtk2 path from registry
-  import _winreg
+  import winreg
   import msvcrt
   try:
-    k = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, "Software\\GTK\\2.0")
+    k = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, "Software\\GTK\\2.0")
   except EnvironmentError:
-    print _('You must install the GTK+ Runtime Environment v2.6 or higher to run this program.')
+    print(_('You must install the GTK+ Runtime Environment v2.6 or higher to run this program.'))
     sys.exit(1)
-  gtkdir = _winreg.QueryValueEx(k, "Path")
+  gtkdir = winreg.QueryValueEx(k, "Path")
   os.environ['PATH'] += ";%s\\lib;%s\\bin;%s" % (gtkdir[0], gtkdir[0], INSTALL_DIR)
-  _winreg.CloseKey(k)
+  winreg.CloseKey(k)
 
 try:
   import gtk
   import gobject
 except:
-  print _("An error occurred while importing gtk/gobject.")
-  print _("Please make sure you have a valid GTK+ Runtime Environment.")
+  print(_("An error occurred while importing gtk/gobject."))
+  print(_("Please make sure you have a valid GTK+ Runtime Environment."))
   sys.exit(1)
 #--
 import audio_convert_mod
@@ -78,11 +83,11 @@ def reportBug(etype=None, evalue=None, tb=None):
       fh.close()
       sys.exit(1)
     else:
-      print _('WARNING: Couldn\'t write bug report - Insufficient permissions!')
+      print(_('WARNING: Couldn\'t write bug report - Insufficient permissions!'))
       sys.exit(1)
   elif response == gtk.RESPONSE_CLOSE:
     sys.exit(1)
-  print tracebackText
+  print(tracebackText)
 
 sys.excepthook = reportBug
 gobject.threads_init()
@@ -94,12 +99,12 @@ from audio_convert_mod import formats
 def usage(error):
   """ Print the application usage """
   if error:
-    print _('Invalid usage: %s'  % error)
-  print _("""Usage: audio-convert-mod [OPTIONS] File1 [File2 File3 ...]
+    print(_('Invalid usage: %s'  % error))
+  print(_("""Usage: audio-convert-mod [OPTIONS] File1 [File2 File3 ...]
   Options:
     -v, --verbose  :  Enable debug messages
     -h, --help  :  Print this message and exit
-""")
+"""))
 
 def escape(uri):
     "Convert each space to %20, etc"
@@ -512,7 +517,7 @@ class acmApp(interface.Controller):
     model = self.ui.main2QualityCombobox.get_model().clear()
     model = self.ui.main2FormatCombobox.get_model()
     model.clear()
-    for format in formats.FORMATS.values():
+    for format in list(formats.FORMATS.values()):
       if format.get()[0] == True:
         model.append([format.__class__.__name__.upper()])
     if active >= 0:
@@ -574,7 +579,7 @@ class acmApp(interface.Controller):
       try:
         self.trayicon.set_visible(False)
         gtk.main_quit()
-      except RuntimeError, errormesg:
+      except RuntimeError as errormesg:
         self.logger.logmsg("INFO", _('gtk.main_quit() encountered a RuntimeError: %s') % errormesg)
     return False
 
@@ -594,13 +599,13 @@ class acmApp(interface.Controller):
         try:
           self.logger.logmsg("INFO", _('Removing file from older release: %s.' % i))
           os.remove(i)
-        except Exception, error:
+        except Exception as error:
           self.logger.logmsg("WARNING", _('Could not remove file %(a)s: %(b)s') % {'a': i, 'b': error})
       if os.path.exists(i) and os.path.isdir(i):
         try:
           self.logger.logmsg("INFO", _('Removing directory from older release: %s.' % i))
           shutil.rmtree(i)
-        except Exception, error:
+        except Exception as error:
           self.logger.logmsg("WARNING", _('Could not remove directory %(a)s: %(b)s') % {'a': i, 'b': error})
     return True
 
@@ -629,7 +634,7 @@ class acmApp(interface.Controller):
       return -1
     if os.path.exists('%s/.gnome2/nautilus-scripts/' % USERHOME):
       if not os.path.exists('%s/.gnome2/nautilus-scripts/audio-convert-mod' % USERHOME):
-        os.mkdir('%s/.gnome2/nautilus-scripts/audio-convert-mod' % USERHOME, 0755)
+        os.mkdir('%s/.gnome2/nautilus-scripts/audio-convert-mod' % USERHOME, 0o755)
       os.symlink(wrapperLocation, '%s/.gnome2/nautilus-scripts/audio-convert-mod/%s' % (USERHOME, _('Convert Files')))
       self.logger.logmsg("INFO", _('Installed GNOME file manager integration'))
     else:
@@ -993,7 +998,7 @@ class acmApp(interface.Controller):
   def on_main1AddButton_clicked(self, widget):
     """ Add file(s) """
     ffilterList = []
-    for key in formats.FORMATS.keys():
+    for key in list(formats.FORMATS.keys()):
       if formats.FORMATS[key].get()[1]:
         for extension in formats.FORMATS[key].extensions:
           ffilterList.append('*.%s' % extension.lower())
@@ -1240,7 +1245,7 @@ class acmApp(interface.Controller):
               try:
                 self.logger.logmsg("DEBUG", _("Removing existing file %s") % wavfile)
                 os.remove(wavfile)
-              except Exception, errormsg:
+              except Exception as errormsg:
                 self.logger.logmsg("WARNING", _("Could not remove existing file: %s") % errormsg)
               break
             else: # just incase
@@ -1302,7 +1307,7 @@ class acmApp(interface.Controller):
             try:
               self.logger.logmsg("DEBUG", _("Removing existing file %s") % newname)
               os.remove(newname)
-            except Exception, errormsg:
+            except Exception as errormsg:
               self.logger.logmsg("WARNING", _("Could not remove existing file: %s") % errormsg)
             break
           else: # we should NEVER be here, but just incase.
@@ -1462,7 +1467,7 @@ if __name__ == "__main__":
     avalableOptions = ["help", "verbose"]
     # letter = plain options, letter: = option with an arg
     (opts, rest_args) = getopt.gnu_getopt(sys.argv[1:],"hv", avalableOptions)
-  except (getopt.GetoptError), error:
+  except (getopt.GetoptError) as error:
     usage(str(error))
     sys.exit(1)
 

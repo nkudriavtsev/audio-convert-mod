@@ -19,20 +19,21 @@
 """
 Custom widgets.
 """
-import gtk
-import gobject
+from builtins import object
+from gi.repository import Gtk
+from gi.repository import GObject
 
 import audio_convert_mod
 from audio_convert_mod.i18n import _
 from audio_convert_mod.const import *
 from audio_convert_mod import formats
 
-class StatusBar(gtk.Statusbar):
+class StatusBar(Gtk.Statusbar):
     def __init__(self, widget):
         """ Initialize.
             widget: GTK widget to use as the statusbar
         """
-        gtk.Statusbar.__init__(self)
+        GObject.GObject.__init__(self)
         self.statusbar = widget
 
     def newmessage(self, message, seconds=3):
@@ -47,21 +48,21 @@ class StatusBar(gtk.Statusbar):
         except AttributeError:
             pass
         self.statusbar.push(1, message)
-        self.message_timer = gobject.timeout_add(seconds*1000, self.message_timeout)
+        self.message_timer = GObject.timeout_add(seconds*1000, self.message_timeout)
 
     def message_timeout(self):
         """ Remove a message from the statusbar """
         self.statusbar.pop(1)
-        gobject.source_remove(self.message_timer)
+        GObject.source_remove(self.message_timer)
         return True
 
-class ProgressBar(gtk.ProgressBar):
+class ProgressBar(Gtk.ProgressBar):
     def __init__(self, widget, ms=15):
         """ Initialize.
             widget: GTK widget to use as the progressbar
             ms: Pulse step is every this many miliseconds
         """
-        gtk.ProgressBar.__init__(self)
+        GObject.GObject.__init__(self)
         self.progressbar = widget
         self.ms = ms
         self.pulsing = False
@@ -78,11 +79,11 @@ class ProgressBar(gtk.ProgressBar):
         if self.pulsing:
             self.stopPulse()
         self.pulsing = True
-        self.pulsetimer = gobject.timeout_add(self.ms, self._pulse)
+        self.pulsetimer = GObject.timeout_add(self.ms, self._pulse)
 
     def stopPulse(self):
         """ Stop auto-pulsing the progressbar """
-        gobject.source_remove(self.pulsetimer)
+        GObject.source_remove(self.pulsetimer)
         self.progressbar.set_fraction(0)
         self.pulsing = False
         return True
@@ -94,7 +95,7 @@ class ProgressBar(gtk.ProgressBar):
             self.stopPulse()
             self.startPulse()
 
-class GenericDia:
+class GenericDia(object):
   """ Wrapper for the generic dialog """
   def __init__(self, dialog, title, parent):
     """ Initialize """
@@ -121,7 +122,7 @@ class GenericDia:
     self.destroy()
     return response
 
-class PathBrowser(GenericDia, gtk.FileChooserDialog):
+class PathBrowser(GenericDia, Gtk.FileChooserDialog):
   """ Wrapper for generic path dialogs """
   def __init__(self, dialog, parent, ffilter=None):
     """ Initialize.
@@ -132,7 +133,7 @@ class PathBrowser(GenericDia, gtk.FileChooserDialog):
     """
     GenericDia.__init__(self, dialog, _('Choose a file or folder'), parent)
     if ffilter:
-      self.ffilter = gtk.FileFilter()
+      self.ffilter = Gtk.FileFilter()
       for pattern in ffilter[:-1]:
         self.ffilter.add_pattern(pattern)
       self.ffilter.set_name(ffilter[-1])
@@ -198,15 +199,15 @@ class bugReport(GenericDia):
 
 def saveFilename(parent):
   """ Displays a filechooser (save) and returns the chosen filename """
-  fileChooser = gtk.FileChooserDialog(title=_('Save As...'),
+  fileChooser = Gtk.FileChooserDialog(title=_('Save As...'),
                                       parent=parent,
-                                      action=gtk.FILE_CHOOSER_ACTION_SAVE,
-                                      buttons=(gtk.STOCK_CANCEL,
-                                                 gtk.RESPONSE_CANCEL,
-                                               gtk.STOCK_SAVE,
-                                                 gtk.RESPONSE_OK))
+                                      action=Gtk.FileChooserAction.SAVE,
+                                      buttons=(Gtk.STOCK_CANCEL,
+                                                 Gtk.ResponseType.CANCEL,
+                                               Gtk.STOCK_SAVE,
+                                                 Gtk.ResponseType.OK))
   fileChooser.set_do_overwrite_confirmation(True)
-  if fileChooser.run() in [gtk.RESPONSE_CANCEL, gtk.RESPONSE_DELETE_EVENT]:
+  if fileChooser.run() in [Gtk.ResponseType.CANCEL, Gtk.ResponseType.DELETE_EVENT]:
     filename = None
   else:
     filename = fileChooser.get_filename()
