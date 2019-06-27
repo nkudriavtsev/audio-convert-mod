@@ -90,7 +90,6 @@ def reportBug(etype=None, evalue=None, tb=None):
   print(tracebackText)
 
 sys.excepthook = reportBug
-GObject.threads_init()
 # Import these last so that any errors popup in the GUI
 from audio_convert_mod import acmlogger
 from audio_convert_mod import config
