@@ -49,10 +49,10 @@ if MSWINDOWS:
   winreg.CloseKey(k)
 
 try:
-  import gtk
-  import gobject
+  from gi.repository import Gtk
+  from gi.repository import GObject
 except:
-  print(_("An error occurred while importing gtk/gobject."))
+  print(_("An error occurred while importing gtk/GObject."))
   print(_("Please make sure you have a valid GTK+ Runtime Environment."))
   sys.exit(1)
 #--
@@ -71,7 +71,7 @@ def reportBug(etype=None, evalue=None, tb=None):
   tracebackText = ''.join(traceback.format_exception(etype, evalue, tb))
   reportWindow = widgets.bugReport(c.ui.bugreport, c.ui.bugreportTextview, None, tracebackText)
   response = reportWindow.runAndDestroy()
-  if response == gtk.RESPONSE_OK:
+  if response == Gtk.ResponseType.OK:
     filename = widgets.saveFilename(c.ui.bugreport)
     if not filename:
       sys.exit(1)
@@ -85,12 +85,12 @@ def reportBug(etype=None, evalue=None, tb=None):
     else:
       print(_('WARNING: Couldn\'t write bug report - Insufficient permissions!'))
       sys.exit(1)
-  elif response == gtk.RESPONSE_CLOSE:
+  elif response == Gtk.ResponseType.CLOSE:
     sys.exit(1)
   print(tracebackText)
 
 sys.excepthook = reportBug
-gobject.threads_init()
+GObject.threads_init()
 # Import these last so that any errors popup in the GUI
 from audio_convert_mod import acmlogger
 from audio_convert_mod import config
@@ -179,7 +179,7 @@ class acmApp(interface.Controller):
         else:
           errors.append( _('Skipping non-decodable file `%(a)s`' % {'a': i} ) )
     # okay, now you can sort.
-    model.set_sort_column_id(-1, gtk.SORT_ASCENDING)
+    model.set_sort_column_id(-1, Gtk.SortType.ASCENDING)
     # okay, now you can refresh.
     self.ui.main1FilesTreeview.thaw_child_notify()
     # attach model
@@ -234,8 +234,8 @@ class acmApp(interface.Controller):
     self.logger.setPrintToo(True)
     self.logger.logmsg("INFO", _("audio-convert-mod version %s initialized") % audio_convert_mod.__version__)
     try:
-      import pynotify
-      pynotify.init('audio-convert-mod')
+      from gi.repository import Notify
+      Notify.init('audio-convert-mod')
       self.PYNOTIFY_AVAIL = True
       self.ui.prefsNotifyInTrayCheck.set_label(_('Display noticiations in the tray area'))
     except:
@@ -252,94 +252,94 @@ class acmApp(interface.Controller):
     self.ui.prefs.set_transient_for(self.ui.main)
 
     # liststore
-    liststore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
+    liststore = Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING)
     self.ui.main2QualityCombobox.set_model(liststore)
-    cell = gtk.CellRendererText()
+    cell = Gtk.CellRendererText()
     self.ui.main2QualityCombobox.clear()
     self.ui.main2QualityCombobox.pack_start(cell, True)
     self.ui.main2QualityCombobox.add_attribute(cell, 'text', 1)
 
-    import pango
+    from gi.repository import Pango
     # Selected Files Treeview
-    liststore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
+    liststore = Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_STRING)
     # Column: Format
-    cell = gtk.CellRendererText()
-    cell.set_property('ellipsize', pango.ELLIPSIZE_END)
-    col = gtk.TreeViewColumn(_('Format'), cell, text=0)
+    cell = Gtk.CellRendererText()
+    cell.set_property('ellipsize', Pango.EllipsizeMode.END)
+    col = Gtk.TreeViewColumn(_('Format'), cell, text=0)
     col.set_resizable(True)
     col.set_sort_column_id(0)
     col.set_min_width(75)
     self.ui.main1FilesTreeview.append_column(col)
     # Column: Path
-    cell = gtk.CellRendererText()
-    cell.set_property('ellipsize', pango.ELLIPSIZE_MIDDLE)
-    col = gtk.TreeViewColumn(_('Path'), cell, text=1)
+    cell = Gtk.CellRendererText()
+    cell.set_property('ellipsize', Pango.EllipsizeMode.MIDDLE)
+    col = Gtk.TreeViewColumn(_('Path'), cell, text=1)
     col.set_resizable(True)
     col.set_sort_column_id(1)
     col.set_min_width(150)
     self.ui.main1FilesTreeview.append_column(col)
     # Column: Filename
-    cell = gtk.CellRendererText()
-    cell.set_property('ellipsize', pango.ELLIPSIZE_START)
-    col = gtk.TreeViewColumn(_('Filename'), cell, text=2)
+    cell = Gtk.CellRendererText()
+    cell.set_property('ellipsize', Pango.EllipsizeMode.START)
+    col = Gtk.TreeViewColumn(_('Filename'), cell, text=2)
     col.set_resizable(True)
     col.set_sort_column_id(2)
     self.ui.main1FilesTreeview.append_column(col)
     # Finally...
     self.ui.main1FilesTreeview.set_model(liststore)
     selection = self.ui.main1FilesTreeview.get_selection()
-    selection.set_mode(gtk.SELECTION_MULTIPLE)
+    selection.set_mode(Gtk.SelectionMode.MULTIPLE)
     self.ui.main1FilesTreeview.set_reorderable(False)
-    liststore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+    liststore.set_sort_column_id(0, Gtk.SortType.ASCENDING)
     # Allow enable drag and drop of rows including row move
     target = [('text/uri-list', 0, 0)]
-    self.ui.main1FilesTreeview.drag_dest_set(gtk.DEST_DEFAULT_ALL, target, gtk.gdk.ACTION_COPY)
+    self.ui.main1FilesTreeview.drag_dest_set(Gtk.DestDefaults.ALL, target, Gdk.DragAction.COPY)
     # /Selected Files Treeview
 
     # Formats treeview
-    liststore = gtk.ListStore(gobject.TYPE_STRING,
-                              gobject.TYPE_STRING, gobject.TYPE_STRING,
-                              gobject.TYPE_STRING, gobject.TYPE_STRING,
-                              gobject.TYPE_STRING, gobject.TYPE_STRING)
+    liststore = Gtk.ListStore(GObject.TYPE_STRING,
+                              GObject.TYPE_STRING, GObject.TYPE_STRING,
+                              GObject.TYPE_STRING, GObject.TYPE_STRING,
+                              GObject.TYPE_STRING, GObject.TYPE_STRING)
     # Column: Format
-    cell = gtk.CellRendererText()
-    cell.set_property('ellipsize', pango.ELLIPSIZE_MIDDLE)
-    col = gtk.TreeViewColumn(_('Format'), cell, text=0)
+    cell = Gtk.CellRendererText()
+    cell.set_property('ellipsize', Pango.EllipsizeMode.MIDDLE)
+    col = Gtk.TreeViewColumn(_('Format'), cell, text=0)
     col.set_resizable(False)
     col.set_sort_column_id(0)
     col.set_min_width(100)
     self.ui.featuresFeaturesTreeview.append_column(col)
     # Column: Decode
-    pcell = gtk.CellRendererPixbuf()
-    pcell.set_property('stock-size', gtk.ICON_SIZE_BUTTON)
-    tcell = gtk.CellRendererText()
-    col = gtk.TreeViewColumn(_('Decode'))
-    col.pack_start(pcell, expand=False)
-    col.pack_start(tcell, expand=False)
+    pcell = Gtk.CellRendererPixbuf()
+    pcell.set_property('stock-size', Gtk.IconSize.BUTTON)
+    tcell = Gtk.CellRendererText()
+    col = Gtk.TreeViewColumn(_('Decode'))
+    col.pack_start(pcell, False, True, 0)
+    col.pack_start(tcell, False, True, 0)
     col.set_attributes(pcell, stock_id=1)
     col.set_attributes(tcell, text=2)
     col.set_resizable(True)
     col.set_min_width(85)
     self.ui.featuresFeaturesTreeview.append_column(col)
     # Column: Encode
-    pcell = gtk.CellRendererPixbuf()
-    pcell.set_property('stock-size', gtk.ICON_SIZE_BUTTON)
-    tcell = gtk.CellRendererText()
-    col = gtk.TreeViewColumn(_('Encode'))
-    col.pack_start(pcell, expand=False)
-    col.pack_start(tcell, expand=False)
+    pcell = Gtk.CellRendererPixbuf()
+    pcell.set_property('stock-size', Gtk.IconSize.BUTTON)
+    tcell = Gtk.CellRendererText()
+    col = Gtk.TreeViewColumn(_('Encode'))
+    col.pack_start(pcell, False, True, 0)
+    col.pack_start(tcell, False, True, 0)
     col.set_attributes(pcell, stock_id=3)
     col.set_attributes(tcell, text=4)
     col.set_resizable(False)
     col.set_min_width(85)
     self.ui.featuresFeaturesTreeview.append_column(col)
     # Column: Tags
-    pcell = gtk.CellRendererPixbuf()
-    pcell.set_property('stock-size', gtk.ICON_SIZE_BUTTON)
-    tcell = gtk.CellRendererText()
-    col = gtk.TreeViewColumn(_('Tags'))
-    col.pack_start(pcell, expand=False)
-    col.pack_start(tcell, expand=False)
+    pcell = Gtk.CellRendererPixbuf()
+    pcell.set_property('stock-size', Gtk.IconSize.BUTTON)
+    tcell = Gtk.CellRendererText()
+    col = Gtk.TreeViewColumn(_('Tags'))
+    col.pack_start(pcell, False, True, 0)
+    col.pack_start(tcell, False, True, 0)
     col.set_attributes(pcell, stock_id=5)
     col.set_attributes(tcell, text=6)
     col.set_resizable(False)
@@ -348,7 +348,7 @@ class acmApp(interface.Controller):
     # Lastly...
     self.ui.featuresFeaturesTreeview.set_model(liststore)
     self.ui.featuresFeaturesTreeview.set_reorderable(False)
-    liststore.set_sort_column_id(0, gtk.SORT_ASCENDING)
+    liststore.set_sort_column_id(0, Gtk.SortType.ASCENDING)
     # /Formats treeview
 
     self.processId = None
@@ -417,9 +417,9 @@ class acmApp(interface.Controller):
 
   def _setupTrayIcon(self):
     """ Sets up the tray icon """
-    pix = self.ui.main.render_icon(gtk.STOCK_CONVERT, gtk.ICON_SIZE_MENU)
-    #pix = gtk.gdk.pixbuf_new_from_file("/usr/share/pixmaps/audio-convert-mod.svg")
-    self.trayicon = gtk.status_icon_new_from_pixbuf(pix)
+    pix = self.ui.main.render_icon(Gtk.STOCK_CONVERT, Gtk.IconSize.MENU)
+    #pix = GdkPixbuf.Pixbuf.new_from_file("/usr/share/pixmaps/audio-convert-mod.svg")
+    self.trayicon = Gtk.status_icon_new_from_pixbuf(pix)
     self.trayicon.set_from_pixbuf(pix)
     self.trayicon.connect("popup_menu", self._Popup)
     self.trayicon.connect("activate", self._clicked)
@@ -428,16 +428,16 @@ class acmApp(interface.Controller):
   def trayNotify(self, summary, body, timeout=10):
     """ Display a notification attached to the tray icon if applicable """
     # see /usr/share/doc/python-notify/examples for API
-    #n.set_urgency(pynotify.URGENCY_NORMAL)
-    #n.set_timeout(pynotify.EXPIRES_NEVER)
+    #n.set_urgency(Notify.URGENCY_NORMAL)
+    #n.set_timeout(Notify.EXPIRES_NEVER)
     #n.add_action("clicked","Button text", callback_function, None)
     if not int(config.PreferencesConf().get('Preferences', 'TrayIconNotifications')):
       return
     if self.PYNOTIFY_AVAIL:
-      import pynotify
-      notify = pynotify.Notification(summary, body)
+      from gi.repository import Notify
+      notify = Notify.Notification(summary, body)
       # icon
-      pix = self.ui.main.render_icon(gtk.STOCK_CONVERT, gtk.ICON_SIZE_DIALOG)
+      pix = self.ui.main.render_icon(Gtk.STOCK_CONVERT, Gtk.IconSize.DIALOG)
       notify.set_icon_from_pixbuf(pix)
       # location
       tray = self.trayicon
@@ -461,12 +461,12 @@ class acmApp(interface.Controller):
 
   def _clicked(self, status):
     """ Tray icon is clicked.
-      status: the gtk.StatusIcon
+      status: the Gtk.StatusIcon
     """
     # use me for menu on left click
     def menu_pos(menu):
-      return gtk.status_icon_position_menu(menu, self.trayicon)
-    self.ui.trayMenu.popup(None, None, menu_pos, 0, gtk.get_current_event_time())
+      return Gtk.status_icon_position_menu(menu, self.trayicon)
+    self.ui.trayMenu.popup(None, None, menu_pos, 0, Gtk.get_current_event_time())
     if self.trayicon.get_blinking():
       self.trayicon.set_blinking(False)
 
@@ -474,7 +474,7 @@ class acmApp(interface.Controller):
   def _Popup(self, status, button, time):
     """ Popup the menu at the right position """
     def menu_pos(menu):
-      return gtk.status_icon_position_menu(menu, self.trayicon)
+      return Gtk.status_icon_position_menu(menu, self.trayicon)
     if MSWINDOWS:
       self.ui.trayMenu.popup(None, None, None, button, time)
     else:
@@ -529,13 +529,13 @@ class acmApp(interface.Controller):
     """ Refreshes the checkmarks in Features window """
     def convert(formatObj, decodeLabel, encodeLabel, tagsLabel):
       """ Get an object, return the right liststore entry """
-      encode, decode, tags = gtk.STOCK_NO, gtk.STOCK_NO, gtk.STOCK_NO
+      encode, decode, tags = Gtk.STOCK_NO, Gtk.STOCK_NO, Gtk.STOCK_NO
       if formatObj.get()[0] == True:
-        encode = gtk.STOCK_YES
+        encode = Gtk.STOCK_YES
       if formatObj.get()[1] == True:
-        decode = gtk.STOCK_YES
+        decode = Gtk.STOCK_YES
       if formatObj.get()[2] == True:
-        tags = gtk.STOCK_YES
+        tags = Gtk.STOCK_YES
       return [formatObj.__class__.__name__.upper(),
               decode, decodeLabel,
               encode, encodeLabel,
@@ -553,10 +553,10 @@ class acmApp(interface.Controller):
     model.append(convert(formats.FORMATS['flac'], 'flac', 'flac', 'mutagen'))
     model.append(convert(formats.FORMATS['wv'], 'wavunpak', 'wavpack', 'mutagen'))
     if which('ffmpeg'):
-      icon = gtk.STOCK_YES
+      icon = Gtk.STOCK_YES
     else:
-      icon = gtk.STOCK_NO
-    model.append([_('(Resampling)'), icon, 'ffmpeg', icon, 'ffmpeg', gtk.STOCK_YES, _('N/A')])
+      icon = Gtk.STOCK_NO
+    model.append([_('(Resampling)'), icon, 'ffmpeg', icon, 'ffmpeg', Gtk.STOCK_YES, _('N/A')])
 
 
   ###
@@ -571,16 +571,16 @@ class acmApp(interface.Controller):
 
   def main_close(self, widget, event=None):
     """ Wrapper for quitting """
-    if gtk.main_level() > 1:
-      gtk.main_quit()
-      gobject.idle_add(self.main_close, 100)
+    if Gtk.main_level() > 1:
+      Gtk.main_quit()
+      GObject.idle_add(self.main_close, 100)
     else:
       # do normal stuff I do when the app quits...
       try:
         self.trayicon.set_visible(False)
-        gtk.main_quit()
+        Gtk.main_quit()
       except RuntimeError as errormesg:
-        self.logger.logmsg("INFO", _('gtk.main_quit() encountered a RuntimeError: %s') % errormesg)
+        self.logger.logmsg("INFO", _('Gtk.main_quit() encountered a RuntimeError: %s') % errormesg)
     return False
 
 
@@ -713,13 +713,13 @@ class acmApp(interface.Controller):
   def on_prefsTempFolderBrowseButton_clicked(self, widget):
     """ Browse for a temp folder """
     pathBrowser = widgets.PathBrowser(self.ui.chooser, self.ui.prefs)
-    pathBrowser.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+    pathBrowser.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
     pathBrowser.set_select_multiple(False)
     response = pathBrowser.run()
     paths = pathBrowser.get_filenames()
     paths.sort()
     pathBrowser.destroy()
-    if response != gtk.RESPONSE_OK or not paths:
+    if response != Gtk.ResponseType.OK or not paths:
       return
     self.ui.prefsTempFolderEntry.set_text(paths[0])
 
@@ -1005,12 +1005,12 @@ class acmApp(interface.Controller):
           ffilterList.append('*.%s' % extension.upper())
     ffilterList.append(_('Supported Audio Files'))
     pathBrowser = widgets.PathBrowser(self.ui.chooser, self.ui.main, ffilterList)
-    pathBrowser.set_action(gtk.FILE_CHOOSER_ACTION_OPEN)
+    pathBrowser.set_action(Gtk.FileChooserAction.OPEN)
     pathBrowser.set_select_multiple(True)
     response = pathBrowser.run()
     paths = pathBrowser.get_filenames()
     pathBrowser.destroy()
-    if response != gtk.RESPONSE_OK:
+    if response != Gtk.ResponseType.OK:
       return
     errors = self.addToSelectFilesFilesTreeview(paths)
     if errors != []:
@@ -1019,13 +1019,13 @@ class acmApp(interface.Controller):
   def on_main1AddDirectoryButton_clicked(self, widget):
     """ Add files by selecting a folder """
     pathBrowser = widgets.PathBrowser(self.ui.chooser, self.ui.main)
-    pathBrowser.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+    pathBrowser.set_action(Gtk.FileChooserAction.SELECT_FOLDER)
     pathBrowser.set_select_multiple(True)
     response = pathBrowser.run()
     paths = pathBrowser.get_filenames()
     paths.sort()
     pathBrowser.destroy()
-    if response != gtk.RESPONSE_OK:
+    if response != Gtk.ResponseType.OK:
       return
     fileList = []
     for folder in paths:
@@ -1113,8 +1113,8 @@ class acmApp(interface.Controller):
       self.ui.main3FileProgress.set_fraction(float(1))
       self.ui.main3FileProgress.set_text('100%')
       self.setStatus(_('Idle'))
-      while gtk.events_pending():
-        gtk.main_iteration()
+      while Gtk.events_pending():
+        Gtk.main_iteration()
       return currFile+1
 
     def escape(name):
@@ -1173,7 +1173,7 @@ class acmApp(interface.Controller):
     model.foreach(callback, [files])
     self.fraction = 0
     # update file progress every 500 miliseconds
-    gobject.timeout_add(100, updateProgress, self)
+    GObject.timeout_add(100, updateProgress, self)
     total = len(files)
     currFile = 0
     progressBar = widgets.ProgressBar(self.ui.main3FileProgress)
@@ -1257,8 +1257,8 @@ class acmApp(interface.Controller):
           self.fraction = -1
           progressBar.startPulse()
           while sub.poll() == None:
-            while gtk.events_pending():
-              gtk.main_iteration()
+            while Gtk.events_pending():
+              Gtk.main_iteration()
             time.sleep(0.01)
           progressBar.stopPulse()
         else:
@@ -1270,8 +1270,8 @@ class acmApp(interface.Controller):
                 self.fraction = float(''.join(sub.stdout.readline().split('\n')[:-1]))/2
             except ValueError:
               self.fraction = '.5'
-            while gtk.events_pending():
-              gtk.main_iteration()
+            while Gtk.events_pending():
+              Gtk.main_iteration()
             # FIXME: This causes lame encode to lag
             #time.sleep(0.01)
         if sub.poll() != 0 and sub.poll() != -9:
@@ -1322,8 +1322,8 @@ class acmApp(interface.Controller):
           self.fraction = -1
           progressBar.startPulse()
           while sub.poll() == None:
-            while gtk.events_pending():
-              gtk.main_iteration()
+            while Gtk.events_pending():
+              Gtk.main_iteration()
             time.sleep(0.01)
           progressBar.stopPulse()
           tmpfile = os.path.splitext(wavfile)
@@ -1344,8 +1344,8 @@ class acmApp(interface.Controller):
             self.fraction = -1
             progressBar.startPulse()
             while sub.poll() == None:
-              while gtk.events_pending():
-                gtk.main_iteration()
+              while Gtk.events_pending():
+                Gtk.main_iteration()
               time.sleep(0.01)
             progressBar.stopPulse()
           else:
@@ -1357,8 +1357,8 @@ class acmApp(interface.Controller):
                   self.fraction = float(''.join(sub.stdout.readline().split('\n')[:-1]))/2 + .5
               except ValueError:
                 self.fraction = 1
-              while gtk.events_pending():
-                gtk.main_iteration()
+              while Gtk.events_pending():
+                Gtk.main_iteration()
               # See FIXME about Lame
               #time.sleep(0.01)
           if sub.poll() != 0 and sub.poll() != -9:
@@ -1491,7 +1491,7 @@ if __name__ == "__main__":
   try:
     # Startup the application and call the gtk event loop
     MainApp = acmApp(verbose, paths)
-    gtk.main()
+    Gtk.main()
   except KeyboardInterrupt:
     # ctrl+c?
     MainApp.main_close(None)
