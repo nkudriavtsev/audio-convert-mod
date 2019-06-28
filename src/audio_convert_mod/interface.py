@@ -20,9 +20,9 @@ Common classes for interfacing with Glade files
 """
 
 from builtins import object
-from gi.repository import Gtk
-import Gtk.glade
-Gtk.glade.bindtextdomain("audio-convert-mod")
+from gi.repository import Gtk, GObject
+#import Gtk.glade
+#Gtk.glade.bindtextdomain("audio-convert-mod")
 # gtk
 # |-- glade
 #     |-- XML
@@ -30,7 +30,7 @@ Gtk.glade.bindtextdomain("audio-convert-mod")
 # Controller                    //Creates a UserInterface in 'ui'
 # |-- audio-convert-mod                  //Starts program
 
-class UserInterface(Gtk.glade.XML):
+class UserInterface(Gtk.Builder):
   """Base class for UIs loaded from glade."""
   def __init__(self, filename, rootWidget, domain):
     """
@@ -40,15 +40,17 @@ class UserInterface(Gtk.glade.XML):
       `gladeDir' is the name of the directory, relative to the Python
       path, in which to search for `filename'
     """
-    GObject.GObject.__init__(self, filename, root=None, domain=domain)
+    GObject.GObject.__init__(self)
     self.filename = filename
-    self.root = self.get_widget(rootWidget)
+    self.set_translation_domain("audio-convert-mod")
+    self.add_from_file(filename)
+    self.root = self.get_object(rootWidget)
 
   # *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
   def __getattr__(self, name):
     """Look up an as-yet undefined attribute, assuming it's a widget."""
-    result = self.get_widget(name)
+    result = self.get_object(name)
     if result is None:
       raise AttributeError("Can't find widget %s in %s.\n" %
                  (repr(name), repr(self.filename)))
@@ -66,7 +68,7 @@ class Controller(object):
       `gladeFile' is the glade XML file. """
     # Create and ui object contains the widgets.
     self.ui = UserInterface(gladeFile, rootWidget, 'audio-convert-mod')
-    self.ui.signal_autoconnect(self._getAllMethods())
+    self.ui.connect_signals(self._getAllMethods())
 
   def _getAllMethods(self):
     """ Get a dictionary of all methods in self's class hierarchy. """
@@ -104,4 +106,3 @@ class Controller(object):
       result.extend(list(currClass.__bases__))
       i = i + 1
     return result
-
