@@ -3,40 +3,6 @@
 <!--*- mode: xml -*-->
 <interface>
   <requires lib="gtk+" version="3.14"/>
-  <object class="GtkDialog">
-    <property name="can_focus">False</property>
-    <property name="type_hint">dialog</property>
-    <child>
-      <placeholder/>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox">
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <placeholder/>
-        </child>
-      </object>
-    </child>
-  </object>
   <object class="GtkAboutDialog" id="about">
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
@@ -586,7 +552,7 @@
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
                 <property name="draw_indicator">True</property>
-                <signal name="clicked" handler="on_prefsIntegrateWithNautilusCheck_clicked" swapped="no"/>
+                <signal name="clicked" handler="on_prefsIntegrateWithGNOMECheck_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -754,13 +720,12 @@
           <object class="GtkNotebook" id="mainControlNotebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="show_border">False</property>
             <property name="scrollable">True</property>
             <child>
               <object class="GtkBox" id="main1SelectFiles">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">2</property>
                 <child>
@@ -825,6 +790,7 @@
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonAdd1</property>
                             <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_main1AddButton_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -841,6 +807,7 @@
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonAdd2</property>
                             <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_main1AddDirectoryButton_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -857,6 +824,7 @@
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonRemove</property>
                             <property name="always_show_image">True</property>
+                            <signal name="clicked" handler="on_main1RemoveButton_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">True</property>
@@ -909,25 +877,9 @@
               <placeholder/>
             </child>
             <child>
-              <object class="GtkLabel" id="main2Label">
+              <object class="GtkBox" id="main2ConversionSettings">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-              </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child type="tab">
-              <placeholder/>
-            </child>
-            <child>
-              <object class="GtkBox" id="main3ConversionSettings">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">2</property>
                 <child>
@@ -1015,6 +967,7 @@
                             <property name="can_focus">True</property>
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonRefresh</property>
+                            <signal name="clicked" handler="on_main2FormatRefreshButton_clicked" swapped="no"/>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1322,32 +1275,16 @@
                 </child>
               </object>
               <packing>
-                <property name="position">2</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child type="tab">
               <placeholder/>
             </child>
             <child>
-              <object class="GtkLabel" id="main4Label">
+              <object class="GtkBox" id="main3ConversionSettingsAdvanced">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-              </object>
-              <packing>
-                <property name="position">3</property>
-              </packing>
-            </child>
-            <child type="tab">
-              <placeholder/>
-            </child>
-            <child>
-              <object class="GtkBox" id="main5ConversionSettingsAdvanced">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">2</property>
                 <child>
@@ -1592,7 +1529,7 @@ Be sure to double-check your selection before clicking "Next".</property>
                                           </packing>
                                         </child>
                                         <child>
-                                          <object class="GtkFileChooserButton" id="main2SuccessOutputFolderFilechooser1">
+                                          <object class="GtkFileChooserButton" id="main2SuccessOutputFolderFilechooser">
                                             <property name="visible">True</property>
                                             <property name="can_focus">False</property>
                                             <property name="action">select-folder</property>
@@ -1663,32 +1600,16 @@ Be sure to double-check your selection before clicking "Next".</property>
                 </child>
               </object>
               <packing>
-                <property name="position">4</property>
+                <property name="position">2</property>
               </packing>
             </child>
             <child type="tab">
               <placeholder/>
             </child>
             <child>
-              <object class="GtkLabel" id="main6Label">
+              <object class="GtkBox" id="main4RunningConversion">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-              </object>
-              <packing>
-                <property name="position">5</property>
-              </packing>
-            </child>
-            <child type="tab">
-              <placeholder/>
-            </child>
-            <child>
-              <object class="GtkBox" id="main7RunningConversion">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">2</property>
                 <child>
@@ -1984,32 +1905,16 @@ Be sure to double-check your selection before clicking "Next".</property>
                 </child>
               </object>
               <packing>
-                <property name="position">6</property>
+                <property name="position">3</property>
               </packing>
             </child>
             <child type="tab">
               <placeholder/>
             </child>
             <child>
-              <object class="GtkLabel" id="main8Label">
+              <object class="GtkBox" id="main5ConversionComplete">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-              </object>
-              <packing>
-                <property name="position">7</property>
-              </packing>
-            </child>
-            <child type="tab">
-              <placeholder/>
-            </child>
-            <child>
-              <object class="GtkBox" id="main9ConversionComplete">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_left">4</property>
-                <property name="margin_right">4</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">4</property>
                 <child>
@@ -2124,22 +2029,38 @@ Be sure to double-check your selection before clicking "Next".</property>
                 </child>
               </object>
               <packing>
-                <property name="position">8</property>
+                <property name="position">4</property>
               </packing>
             </child>
             <child type="tab">
               <placeholder/>
             </child>
             <child>
-              <object class="GtkLabel" id="main10Label">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="xalign">0.5</property>
-                <property name="yalign">0.5</property>
-              </object>
-              <packing>
-                <property name="position">9</property>
-              </packing>
+              <placeholder/>
+            </child>
+            <child type="tab">
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child type="tab">
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child type="tab">
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child type="tab">
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
             </child>
             <child type="tab">
               <placeholder/>
@@ -2165,6 +2086,7 @@ Be sure to double-check your selection before clicking "Next".</property>
                 <property name="hexpand">True</property>
                 <property name="image">imageButtonSave</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="on_main2SaveDefaultsButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2194,6 +2116,7 @@ Be sure to double-check your selection before clicking "Next".</property>
                 <property name="receives_default">False</property>
                 <property name="hexpand">True</property>
                 <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_mainBackButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -2211,6 +2134,7 @@ Be sure to double-check your selection before clicking "Next".</property>
                 <property name="hexpand">True</property>
                 <property name="image">imageButtonGoForward</property>
                 <property name="always_show_image">True</property>
+                <signal name="clicked" handler="on_mainNextButton_clicked" swapped="no"/>
                 <accelerator key="n" signal="clicked" modifiers="GDK_MOD1_MASK"/>
               </object>
               <packing>
@@ -2261,12 +2185,6 @@ Be sure to double-check your selection before clicking "Next".</property>
       <widget name="main3SkipFileButton"/>
       <widget name="main3CancelButton"/>
     </widgets>
-  </object>
-  <object class="GtkImage" id="imageMenuWarning">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-dialog-warning</property>
-    <property name="icon_size">1</property>
   </object>
   <object class="GtkDialog" id="tags">
     <property name="can_focus">False</property>
