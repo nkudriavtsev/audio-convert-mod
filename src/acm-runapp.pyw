@@ -246,8 +246,6 @@ class acmApp(interface.Controller):
 
     # Transient Windows
     self.ui.about.set_transient_for(self.ui.main)
-#    self.ui.license.set_transient_for(self.ui.about)
-#    self.ui.credits.set_transient_for(self.ui.about)
     self.ui.chooser.set_transient_for(self.ui.main)
     self.ui.features.set_transient_for(self.ui.main)
     self.ui.tags.set_transient_for(self.ui.main)
@@ -804,21 +802,7 @@ class acmApp(interface.Controller):
     import webbrowser
     webbrowser.open_new('http://www.diffingo.com/opensource/')
 
-  def on_aboutLicenseButton_clicked(self, widget):
-    self.ui.license.show()
-
-  def on_aboutCreditsButton_clicked(self, widget):
-    self.ui.credits.show()
-
-  def on_creditsCloseButton_clicked(self, widget):
-    self.ui.credits.hide()
-
-  def on_licenseCloseButton_clicked(self, widget):
-    self.ui.license.hide()
-
   def on_aboutCloseButton_clicked(self, widget):
-    self.ui.license.hide()
-    self.ui.credits.hide()
     self.ui.about.hide()
 
   ## FEATURES ##
