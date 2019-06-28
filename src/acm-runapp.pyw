@@ -49,7 +49,9 @@ if MSWINDOWS:
   winreg.CloseKey(k)
 
 try:
-  from gi.repository import Gtk
+  import gi
+  gi.require_version('Gtk', '3.0')
+  from gi.repository import Gtk, Gdk
   from gi.repository import GObject
 except:
   print(_("An error occurred while importing gtk/GObject."))
@@ -188,8 +190,8 @@ class acmApp(interface.Controller):
   def showError(self, parent, header, text, details=''):
     """ Shows an error in the HIG-style error dialog """
     dialog = widgets.GenericDia(self.ui.errorDialog, _('Error'), parent)
-    self.ui.errorDialogHeaderLabel.set_text('<span size="large" weight="bold">%s</span>' % header)
-    self.ui.errorDialogHeaderLabel.set_use_markup(True)
+    self.ui.errorDialog.set_property('text', '<span size="large" weight="bold">%s</span>' % header)
+    self.ui.errorDialog.set_property('use_markup', True)
     self.ui.errorDialogTextLabel.set_text(text)
     self.ui.errorDialogDetailsTextview.get_buffer().set_text(details)
     if details:
@@ -201,8 +203,8 @@ class acmApp(interface.Controller):
   def showWarning(self, parent, header, text, details=''):
     """ Shows an error in the HIG-style error dialog """
     dialog = widgets.GenericDia(self.ui.warningDialog, _('Warning'), parent)
-    self.ui.warningDialogHeaderLabel.set_text('<span size="large" weight="bold">%s</span>' % header)
-    self.ui.warningDialogHeaderLabel.set_use_markup(True)
+    self.ui.warningDialog.set_property('text', '<span size="large" weight="bold">%s</span>' % header)
+    self.ui.warningDialog.set_property('use_markup', True)
     self.ui.warningDialogTextLabel.set_text(text)
     self.ui.warningDialogDetailsTextview.get_buffer().set_text(details)
     if details:
@@ -233,6 +235,7 @@ class acmApp(interface.Controller):
     self.logger.setPrintToo(True)
     self.logger.logmsg("INFO", _("audio-convert-mod version %s initialized") % audio_convert_mod.__version__)
     try:
+      gi.require_version('Notify', '0.7')
       from gi.repository import Notify
       Notify.init('audio-convert-mod')
       self.PYNOTIFY_AVAIL = True
@@ -243,8 +246,8 @@ class acmApp(interface.Controller):
 
     # Transient Windows
     self.ui.about.set_transient_for(self.ui.main)
-    self.ui.license.set_transient_for(self.ui.about)
-    self.ui.credits.set_transient_for(self.ui.about)
+#    self.ui.license.set_transient_for(self.ui.about)
+#    self.ui.credits.set_transient_for(self.ui.about)
     self.ui.chooser.set_transient_for(self.ui.main)
     self.ui.features.set_transient_for(self.ui.main)
     self.ui.tags.set_transient_for(self.ui.main)
@@ -291,8 +294,8 @@ class acmApp(interface.Controller):
     self.ui.main1FilesTreeview.set_reorderable(False)
     liststore.set_sort_column_id(0, Gtk.SortType.ASCENDING)
     # Allow enable drag and drop of rows including row move
-    target = [('text/uri-list', 0, 0)]
-    self.ui.main1FilesTreeview.drag_dest_set(Gtk.DestDefaults.ALL, target, Gdk.DragAction.COPY)
+    # target = Gtk.TargetEntry('text/uri-list', 0, 0)
+    self.ui.main1FilesTreeview.drag_dest_set(Gtk.DestDefaults.ALL, [], Gdk.DragAction.COPY)
     # /Selected Files Treeview
 
     # Formats treeview
@@ -313,8 +316,8 @@ class acmApp(interface.Controller):
     pcell.set_property('stock-size', Gtk.IconSize.BUTTON)
     tcell = Gtk.CellRendererText()
     col = Gtk.TreeViewColumn(_('Decode'))
-    col.pack_start(pcell, False, True, 0)
-    col.pack_start(tcell, False, True, 0)
+    col.pack_start(pcell, False) #, True, 0)
+    col.pack_start(tcell, False) #, True, 0)
     col.set_attributes(pcell, stock_id=1)
     col.set_attributes(tcell, text=2)
     col.set_resizable(True)
@@ -325,8 +328,8 @@ class acmApp(interface.Controller):
     pcell.set_property('stock-size', Gtk.IconSize.BUTTON)
     tcell = Gtk.CellRendererText()
     col = Gtk.TreeViewColumn(_('Encode'))
-    col.pack_start(pcell, False, True, 0)
-    col.pack_start(tcell, False, True, 0)
+    col.pack_start(pcell, False) #, True, 0)
+    col.pack_start(tcell, False) #, True, 0)
     col.set_attributes(pcell, stock_id=3)
     col.set_attributes(tcell, text=4)
     col.set_resizable(False)
@@ -337,8 +340,8 @@ class acmApp(interface.Controller):
     pcell.set_property('stock-size', Gtk.IconSize.BUTTON)
     tcell = Gtk.CellRendererText()
     col = Gtk.TreeViewColumn(_('Tags'))
-    col.pack_start(pcell, False, True, 0)
-    col.pack_start(tcell, False, True, 0)
+    col.pack_start(pcell, False) #, True, 0)
+    col.pack_start(tcell, False) #, True, 0)
     col.set_attributes(pcell, stock_id=5)
     col.set_attributes(tcell, text=6)
     col.set_resizable(False)
@@ -352,19 +355,19 @@ class acmApp(interface.Controller):
 
     self.processId = None
     # Labels, defaults
-    self.ui.aboutVersionLabel.set_text('<span size="xx-large" weight="bold">audio-convert-mod %s</span>' % audio_convert_mod.__version__)
-    self.ui.aboutVersionLabel.set_use_markup(True)
+    self.ui.about.set_version(audio_convert_mod.__version__)
+    #self.ui.aboutVersionLabel.set_use_markup(True)
     self.ui.mainControlNotebook.set_show_tabs(False)
     if MSWINDOWS:
       self.ui.prefsFileManagerIntegrationFrame.set_sensitive(False)
     self.prepareForNewConversion()
     # /Set defaults
 
-    self._setupTrayIcon()
-    if int(prefs.get('Preferences', 'ShowTrayIcon')) == 1:
-      self.trayicon.set_visible(True)
-    else:
-      self.trayicon.set_visible(False)
+    # self._setupTrayIcon()
+    # if int(prefs.get('Preferences', 'ShowTrayIcon')) == 1:
+    #   self.trayicon.set_visible(True)
+    # else:
+    #   self.trayicon.set_visible(False)
 
     # now add those paths
     if paths != []:
@@ -416,13 +419,13 @@ class acmApp(interface.Controller):
 
   def _setupTrayIcon(self):
     """ Sets up the tray icon """
-    pix = self.ui.main.render_icon(Gtk.STOCK_CONVERT, Gtk.IconSize.MENU)
-    #pix = GdkPixbuf.Pixbuf.new_from_file("/usr/share/pixmaps/audio-convert-mod.svg")
-    self.trayicon = Gtk.status_icon_new_from_pixbuf(pix)
-    self.trayicon.set_from_pixbuf(pix)
-    self.trayicon.connect("popup_menu", self._Popup)
-    self.trayicon.connect("activate", self._clicked)
-    self.setStatus(_('Idle'))
+    #pix = self.ui.main.render_icon(Gtk.STOCK_CONVERT, Gtk.IconSize.MENU)
+    ##pix = GdkPixbuf.Pixbuf.new_from_file("/usr/share/pixmaps/audio-convert-mod.svg")
+    #self.trayicon = Gtk.status_icon_new_from_pixbuf(pix)
+    #self.trayicon.set_from_pixbuf(pix)
+    #self.trayicon.connect("popup_menu", self._Popup)
+    #self.trayicon.connect("activate", self._clicked)
+    #self.setStatus(_('Idle'))
 
   def trayNotify(self, summary, body, timeout=10):
     """ Display a notification attached to the tray icon if applicable """
@@ -430,32 +433,32 @@ class acmApp(interface.Controller):
     #n.set_urgency(Notify.URGENCY_NORMAL)
     #n.set_timeout(Notify.EXPIRES_NEVER)
     #n.add_action("clicked","Button text", callback_function, None)
-    if not int(config.PreferencesConf().get('Preferences', 'TrayIconNotifications')):
-      return
-    if self.PYNOTIFY_AVAIL:
-      from gi.repository import Notify
-      notify = Notify.Notification(summary, body)
-      # icon
-      pix = self.ui.main.render_icon(Gtk.STOCK_CONVERT, Gtk.IconSize.DIALOG)
-      notify.set_icon_from_pixbuf(pix)
-      # location
-      tray = self.trayicon
-      if tray.get_visible():
-        notify.set_property('status-icon', tray)
-      # timeout?
-      if timeout != 0:
-        notify.set_timeout(int(timeout) * 1000)
-      # finally, show it
-      try:
-        notify.show()
-      except:
-        self.trayicon.set_blinking(True)
-    else:
-      self.trayicon.set_blinking(True)
+    # if not int(config.PreferencesConf().get('Preferences', 'TrayIconNotifications')):
+    #   return
+    # if self.PYNOTIFY_AVAIL:
+    #   from gi.repository import Notify
+    #   notify = Notify.Notification(summary, body)
+    #   # icon
+    #   pix = self.ui.main.render_icon(Gtk.STOCK_CONVERT, Gtk.IconSize.DIALOG)
+    #   notify.set_icon_from_pixbuf(pix)
+    #   # location
+    #   tray = self.trayicon
+    #   if tray.get_visible():
+    #     notify.set_property('status-icon', tray)
+    #   # timeout?
+    #   if timeout != 0:
+    #     notify.set_timeout(int(timeout) * 1000)
+    #   # finally, show it
+    #   try:
+    #     notify.show()
+    #   except:
+    #     self.trayicon.set_blinking(True)
+    # else:
+    #   self.trayicon.set_blinking(True)
 
   def setStatus(self, status):
     """ Sets the status icon and tray label """
-    self.trayicon.set_tooltip(_('audio-convert-mod - %s' % status))
+    # self.trayicon.set_tooltip(_('audio-convert-mod - %s' % status))
     self.ui.main3StatusLabel.set_text(status)
 
   def _clicked(self, status):
@@ -514,11 +517,12 @@ class acmApp(interface.Controller):
     formats.recheck()
     active = self.ui.main2FormatCombobox.get_active()
     model = self.ui.main2QualityCombobox.get_model().clear()
-    model = self.ui.main2FormatCombobox.get_model()
-    model.clear()
+    self.ui.main2FormatCombobox.set_model(None)
+    model = Gtk.ListStore(GObject.TYPE_STRING)
     for format in list(formats.FORMATS.values()):
       if format.get()[0] == True:
         model.append([format.__class__.__name__.upper()])
+    self.ui.main2FormatCombobox.set_model(model)
     if active >= 0:
       self.ui.main2FormatCombobox.set_active(active)
     else:
@@ -576,7 +580,7 @@ class acmApp(interface.Controller):
     else:
       # do normal stuff I do when the app quits...
       try:
-        self.trayicon.set_visible(False)
+        #self.trayicon.set_visible(False)
         Gtk.main_quit()
       except RuntimeError as errormesg:
         self.logger.logmsg("INFO", _('Gtk.main_quit() encountered a RuntimeError: %s') % errormesg)
@@ -833,8 +837,8 @@ class acmApp(interface.Controller):
   def on_mainBackButton_clicked(self, widget):
     """ Back to previous page """
     currPage = self.ui.mainControlNotebook.get_current_page()
-    if self.trayicon.get_blinking():
-      self.trayicon.set_blinking(False)
+    # if self.trayicon.get_blinking():
+    #   self.trayicon.set_blinking(False)
     self.ui.mainControlNotebook.set_current_page(currPage - 1)
     if currPage == 1:
       # if we hit back on second page
@@ -850,8 +854,8 @@ class acmApp(interface.Controller):
   def on_mainNextButton_clicked(self, widget):
     """ Advance to next page """
     currPage = self.ui.mainControlNotebook.get_current_page()
-    if self.trayicon.get_blinking():
-      self.trayicon.set_blinking(False)
+    # if self.trayicon.get_blinking():
+    #   self.trayicon.set_blinking(False)
     if currPage == 0:
       # on the first page with no files in the treeview
       model = self.ui.main1FilesTreeview.get_model()
