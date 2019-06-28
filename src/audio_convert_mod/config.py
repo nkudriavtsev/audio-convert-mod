@@ -102,7 +102,7 @@ class ConfigFile(configparser.ConfigParser):
 
   def set(self, section, prop, value):
     """ Set a value in a given section and save. """
-    self.config.set(section, prop, value)
+    self.config.set(section, prop, str(value))
     self.write()
     return True
 
@@ -165,7 +165,7 @@ class PreferencesConf(ConfigFile):
     for pair in [['ShowTrayIcon', 1], ['TrayIconNotifications', 1], ['PauseOnErrors', 1],
                  ['TemporaryDirectory', tempfile.gettempdir()]]:
       self.set('Preferences', pair[0], pair[1])
-    
+
     # Defaults section
     self.add_section('Defaults')
     # FileExists=1 --> append
@@ -210,7 +210,7 @@ class PreferencesConf(ConfigFile):
                 ['fileexists', 1], ['metadata', 1], ['successfulconversion', 1],
                 ['successfulconversiondest', USERHOME], ['outputfolder', 'Off']]:
           self.set('Defaults', pair[0], pair[1])
-      
+
       if oldVersion == '3.45.1' or fromHereUp == True:
         fromHereUp = True
       if oldVersion == '3.45.2' or fromHereUp == True:
@@ -247,4 +247,3 @@ class PreferencesConf(ConfigFile):
         if not self.has_option('Defaults', 'Resample'): # fix bug in 3.46.0a
           self.set('Defaults', 'Resample', -1)
     return self.set('Preferences', 'Version', audio_convert_mod.__version__)
-
