@@ -689,11 +689,11 @@ Harris Zhuang (zh_CN)
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_quit1_activate" swapped="no"/>
+                        <accelerator key="q" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                     </child>
                   </object>
                 </child>
-                <accelerator key="f" signal="activate" modifiers="GDK_MOD1_MASK"/>
               </object>
             </child>
             <child>
@@ -735,6 +735,7 @@ Harris Zhuang (zh_CN)
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_about1_activate" swapped="no"/>
+                        <accelerator key="a" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                     </child>
                   </object>
