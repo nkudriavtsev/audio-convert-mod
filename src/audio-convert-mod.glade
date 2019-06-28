@@ -643,7 +643,7 @@
               <object class="GtkMenuItem" id="menuitem1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_File</property>
+                <property name="label" translatable="yes">File</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menuitem1_menu">
                     <property name="can_focus">False</property>
@@ -652,8 +652,9 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="tooltip_text" translatable="yes">Show which formats are recognized</property>
-                        <property name="label" translatable="yes">Show _Format Conversion Capabilities</property>
+                        <property name="label" translatable="yes">Show Format Conversion Capabilities</property>
                         <signal name="activate" handler="on_show_features1_activate" swapped="no"/>
+                        <accelerator key="f" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                     </child>
                     <child>
@@ -674,34 +675,37 @@
                     </child>
                   </object>
                 </child>
+                <accelerator key="f" signal="activate" modifiers="GDK_MOD1_MASK"/>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Edit</property>
+                <property name="label" translatable="yes">Edit</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menuitem2_menu">
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="preferences1">
-                        <property name="label" translatable="yes">_Preferences</property>
+                        <property name="label" translatable="yes">Preferences</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_preferences1_activate" swapped="no"/>
+                        <accelerator key="p" signal="activate" modifiers="GDK_MOD1_MASK"/>
                       </object>
                     </child>
                   </object>
                 </child>
+                <accelerator key="e" signal="activate" modifiers="GDK_MOD1_MASK"/>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">_Help</property>
+                <property name="label" translatable="yes">Help</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menuitem3_menu">
                     <property name="can_focus">False</property>
@@ -717,6 +721,7 @@
                     </child>
                   </object>
                 </child>
+                <accelerator key="h" signal="activate" modifiers="GDK_MOD1_MASK"/>
               </object>
             </child>
           </object>
