@@ -742,8 +742,8 @@ class acmApp(interface.Controller):
       prefs.set('Preferences', 'ShowTrayIcon', 1)
     else:
       prefs.set('Preferences', 'ShowTrayIcon', 0)
-    self.trayicon.set_visible(active)
-    self.ui.show_tray_icon1.set_active(active)
+    # self.trayicon.set_visible(active)
+    # self.ui.show_tray_icon1.set_active(active)
     if not self.ui.main.get_property('visible'):
       self.ui.main.show()
 
@@ -754,7 +754,7 @@ class acmApp(interface.Controller):
       prefs.set('Preferences', 'TrayIconNotifications', 1)
     else:
       prefs.set('Preferences', 'TrayIconNotifications', 0)
-      self.trayicon.set_blinking(False)
+      # self.trayicon.set_blinking(False)
 
   def on_prefsPauseOnErrorsCheck_clicked(self, widget):
     prefs = config.PreferencesConf()
