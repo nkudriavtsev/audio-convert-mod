@@ -643,6 +643,7 @@
               <object class="GtkMenuItem" id="menuitem1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_File</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menuitem1_menu">
                     <property name="can_focus">False</property>
@@ -650,6 +651,9 @@
                       <object class="GtkMenuItem" id="show_features1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">Show which formats are recognized</property>
+                        <property name="label" translatable="yes">Show _Format Conversion Capabilities</property>
+                        <signal name="activate" handler="on_show_features1_activate" swapped="no"/>
                       </object>
                     </child>
                     <child>
@@ -665,6 +669,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_quit1_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -675,14 +680,17 @@
               <object class="GtkMenuItem" id="menuitem2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Edit</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menuitem2_menu">
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="preferences1">
+                        <property name="label" translatable="yes">_Preferences</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_preferences1_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -693,6 +701,7 @@
               <object class="GtkMenuItem" id="menuitem3">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Help</property>
                 <child type="submenu">
                   <object class="GtkMenu" id="menuitem3_menu">
                     <property name="can_focus">False</property>
@@ -703,6 +712,7 @@
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
+                        <signal name="activate" handler="on_about1_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -1555,7 +1565,6 @@ Be sure to double-check your selection before clicking "Next".</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">False</property>
-                                        <property name="image">imageMenuWarning</property>
                                         <property name="image_position">right</property>
                                         <property name="always_show_image">True</property>
                                         <property name="active">True</property>
