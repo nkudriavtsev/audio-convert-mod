@@ -8,14 +8,32 @@
     <property name="type_hint">dialog</property>
     <property name="program_name">audio-convert-mod</property>
     <property name="version">v 0.0</property>
-    <property name="copyright" translatable="yes">C) 2005 - 2009 Stewart Adam
-(C) 2007 Michael Schönitzer
-(C) 2019 Nicholas Kudriavtsev</property>
+    <property name="copyright" translatable="yes">Ⓒ 2005 - 2009 Stewart Adam
+Ⓒ 2007 Michael Schönitzer
+Ⓒ 2019 Nicholas Kudriavtsev</property>
     <property name="comments" translatable="yes">A audio file converter</property>
-    <property name="website">www.diffingo.com/opensource</property>
+    <property name="website">httpd://www.diffingo.com/opensource</property>
     <property name="website_label" translatable="yes">www.diffingo.com/opensource</property>
-    <property name="license" translatable="yes"> </property>
-    <property name="authors"> </property>
+    <property name="license" translatable="yes">#  audio-convert-mod is free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+
+#  audio-convert-mod is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+
+#  You should have received a copy of the GNU General Public License
+#  along with audio-convert-mod; if not, write to the Free Software
+#  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA</property>
+    <property name="authors">Stewart Adam &amp;lt; s.adam@diffingo.com &amp;gt;
+Michael Schönitzer &amp;lt; michael@schoenitzer.de &amp;gt;
+Nicholas Kudriavtsev &amp;lt; nkudriavtsev@gmail.com &amp;gt;</property>
+    <property name="documenters">Stewart Adam &amp;lt; s.adam@diffingo.com &amp;gt;</property>
+    <property name="translator_credits" translatable="yes">Michael Schönitzer
+Harris Zhuang (zh_CN)
+</property>
     <property name="logo_icon_name">gtk-convert</property>
     <property name="license_type">custom</property>
     <child>
