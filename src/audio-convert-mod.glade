@@ -410,12 +410,17 @@ Harris Zhuang (zh_CN)
     <property name="can_focus">False</property>
     <property name="stock">gtk-add</property>
   </object>
+  <object class="GtkImage" id="imageButtonBack1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-back</property>
+  </object>
   <object class="GtkImage" id="imageButtonForward1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-media-forward</property>
   </object>
-  <object class="GtkImage" id="imageButtonGoForward">
+  <object class="GtkImage" id="imageButtonForward2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-go-forward</property>
@@ -634,10 +639,10 @@ Harris Zhuang (zh_CN)
     <property name="can_focus">False</property>
     <property name="stock">gtk-remove</property>
   </object>
-  <object class="GtkImage" id="imageButtonSave">
+  <object class="GtkImage" id="imageButtonSave1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="stock">gtk-save</property>
+    <property name="stock">gtk-save-as</property>
   </object>
   <object class="GtkImage" id="imageButtonWarning">
     <property name="visible">True</property>
@@ -647,25 +652,107 @@ Harris Zhuang (zh_CN)
   <object class="GtkWindow" id="main">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">audio-convert-mod</property>
     <property name="window_position">center</property>
     <property name="default_width">700</property>
     <property name="default_height">350</property>
     <property name="icon_name">gtk-convert</property>
     <signal name="delete-event" handler="main_close" swapped="no"/>
     <signal name="destroy-event" handler="main_close" swapped="no"/>
-    <child>
-      <placeholder/>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="title" translatable="yes">gtk-audio-convert</property>
+        <property name="has_subtitle">False</property>
+        <property name="show_close_button">True</property>
+        <child>
+          <object class="GtkButtonBox">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="layout_style">start</property>
+            <child>
+              <object class="GtkButton" id="mainBackButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Back</property>
+                <property name="image">imageButtonBack1</property>
+                <property name="always_show_image">True</property>
+                <signal name="clicked" handler="on_mainBackButton_clicked" swapped="no"/>
+                <accelerator key="b" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+                <property name="non_homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="mainNextButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Next</property>
+                <property name="image">imageButtonForward2</property>
+                <property name="always_show_image">True</property>
+                <signal name="clicked" handler="on_mainNextButton_clicked" swapped="no"/>
+                <accelerator key="n" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+                <property name="non_homogeneous">True</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="main2SaveDefaultsButton">
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="tooltip_text" translatable="yes">Save as Defaults</property>
+                <property name="image">imageButtonSave1</property>
+                <property name="always_show_image">True</property>
+                <signal name="clicked" handler="on_main2SaveDefaultsButton_clicked" swapped="no"/>
+                <accelerator key="s" signal="clicked" modifiers="GDK_CONTROL_MASK"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">3</property>
+                <property name="non_homogeneous">True</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+      </object>
     </child>
     <child>
       <object class="GtkBox">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="margin_left">12</property>
+        <property name="margin_right">12</property>
+        <property name="margin_bottom">12</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkMenuBar" id="menubar1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="valign">start</property>
             <child>
               <object class="GtkMenuItem" id="menuitem1">
                 <property name="visible">True</property>
@@ -755,8 +842,8 @@ Harris Zhuang (zh_CN)
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
             <property name="position">0</property>
           </packing>
         </child>
@@ -764,6 +851,8 @@ Harris Zhuang (zh_CN)
           <object class="GtkNotebook" id="mainControlNotebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="show_border">False</property>
             <property name="scrollable">True</property>
             <child>
@@ -2132,95 +2221,6 @@ Be sure to double-check your selection before clicking "Next".</property>
             <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButtonBox">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="layout_style">spread</property>
-            <child>
-              <object class="GtkButton" id="main2SaveDefaultsButton">
-                <property name="label" translatable="yes">Save as Defaults</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="hexpand">True</property>
-                <property name="image">imageButtonSave</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="on_main2SaveDefaultsButton_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkLabel">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="width_chars">26</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="mainBackButton">
-                <property name="label">gtk-go-back</property>
-                <property name="visible">True</property>
-                <property name="sensitive">False</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="hexpand">True</property>
-                <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_mainBackButton_clicked" swapped="no"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="mainNextButton">
-                <property name="label" translatable="yes">Next</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="can_default">True</property>
-                <property name="receives_default">False</property>
-                <property name="hexpand">True</property>
-                <property name="image">imageButtonGoForward</property>
-                <property name="always_show_image">True</property>
-                <signal name="clicked" handler="on_mainNextButton_clicked" swapped="no"/>
-                <accelerator key="n" signal="clicked" modifiers="GDK_MOD1_MASK"/>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="padding">6</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkStatusbar" id="statusbar1">
-            <property name="can_focus">False</property>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">4</property>
           </packing>
         </child>
       </object>
