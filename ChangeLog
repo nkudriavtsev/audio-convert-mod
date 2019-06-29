@@ -1,6 +1,8 @@
 || Version 4.0.0b changes ||
   * Sat Jun 29 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com>
   - Port to Pyton 3 and Gtk 3
+  - Added support for Nero AAC encoder/decoder
+  - Added support for Opus encoder/decoder
 
 || Version 3.46.0b changes ||
   * Mon Dec 7 2009 Stewart Adam <s.adam at diffingo.com>
