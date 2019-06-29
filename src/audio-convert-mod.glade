@@ -537,6 +537,7 @@ Harris Zhuang (zh_CN)
                   <object class="GtkEntry" id="prefsTempFolderEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">Temporary folder</property>
                     <property name="invisible_char">•</property>
                   </object>
                   <packing>
