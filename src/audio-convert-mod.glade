@@ -1419,6 +1419,7 @@ Be sure to double-check your selection before clicking "Next".</property>
                           <object class="GtkComboBoxText" id="main2ResampleCombo">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                            <property name="button_sensitivity">off</property>
                             <items>
                               <item translatable="yes">8000 Hz</item>
                               <item translatable="yes">16000 Hz</item>
