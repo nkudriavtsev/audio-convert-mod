@@ -1,3 +1,7 @@
+|| Version 4.0.0b changes ||
+  * Sat Jun 29 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com>
+  - Port to Pyton 3 and Gtk 3
+
 || Version 3.46.0b changes ||
   * Mon Dec 7 2009 Stewart Adam <s.adam at diffingo.com>
   - Add support for the .oga extension (Daniel Thompson)
@@ -76,7 +80,7 @@
       * Output folder
       * Move originals to trash
     - Add more error checking
-    
+
     || Version 3.45.0 changes ||
     - Rewrite into python
     - Write functionality of '.converted' script into main program
@@ -137,4 +141,3 @@
     - Added EditMetaTag support
     - Enabled MP3 > MP3 conversions
     - Added automated install scripts
-

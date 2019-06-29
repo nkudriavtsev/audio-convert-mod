@@ -1,9 +1,9 @@
-AC_INIT([audio-convert-mod], 3.46.0b)
+AC_INIT([audio-convert-mod], 4.0.0b)
 AM_INIT_AUTOMAKE([dist-bzip2 no-dist-gzip])
 AC_CONFIG_SRCDIR(src/audio_convert_mod/__init__.py.in)
 
-# Search for Python >= 2.4
-AM_PATH_PYTHON([2.4])
+# Search for Python >= 3.6
+AM_PATH_PYTHON([3.6])
 
 # Setup gettext translation
 ALL_LINGUAS="zh_CN"
