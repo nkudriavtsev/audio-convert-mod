@@ -27,7 +27,6 @@ __status__ = "beta"
 __version__ = "3.47.0"
 __license__ = "GNU GPLv2+"
 
-#import exceptions
 import os
 import re
 import sys
