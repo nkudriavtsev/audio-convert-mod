@@ -483,7 +483,6 @@ Harris Zhuang (zh_CN)
             <child>
               <object class="GtkCheckButton" id="prefsShowTrayIconCheck">
                 <property name="label" translatable="yes">Show tray icon</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
@@ -500,7 +499,6 @@ Harris Zhuang (zh_CN)
             <child>
               <object class="GtkCheckButton" id="prefsNotifyInTrayCheck">
                 <property name="label" translatable="yes">Tray icon notifications - AUTOSET</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
