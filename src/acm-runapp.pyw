@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/python3
 # -*- coding: utf-8 -*-
 #  Copyright (C) 2005, 2006, 2007, 2008, 2009 Stewart Adam
 #  This file is part of audio-convert-mod.
