@@ -51,7 +51,7 @@ if MSWINDOWS:
 try:
   import gi
   gi.require_version('Gtk', '3.0')
-  from gi.repository import Gtk, Gdk
+  from gi.repository import Gtk, Gdk, GLib
   from gi.repository import GObject
 except:
   print(_("An error occurred while importing gtk/GObject."))
@@ -1157,7 +1157,7 @@ class acmApp(interface.Controller):
     model.foreach(callback, [files])
     self.fraction = 0
     # update file progress every 500 miliseconds
-    GObject.timeout_add(100, updateProgress, self)
+    GLib.timeout_add(100, updateProgress, self)
     total = len(files)
     currFile = 0
     progressBar = widgets.ProgressBar(self.ui.main3FileProgress)
@@ -1249,9 +1249,9 @@ class acmApp(interface.Controller):
           while sub.poll() == None:
             try:
               if self.decodeonly:
-                self.fraction = float(''.join(sub.stdout.readline().split('\n')[:-1]))
+                self.fraction = float(''.join(sub.stdout.readline().decode().split('\n')[:-1]))
               else:
-                self.fraction = float(''.join(sub.stdout.readline().split('\n')[:-1]))/2
+                self.fraction = float(''.join(sub.stdout.readline().decode().split('\n')[:-1]))/2
             except ValueError:
               self.fraction = '.5'
             while Gtk.events_pending():
@@ -1336,9 +1336,9 @@ class acmApp(interface.Controller):
             while sub.poll() == None:
               try:
                 if self.encodeonly:
-                  self.fraction = float(''.join(sub.stdout.readline().split('\n')[:-1]))
+                  self.fraction = float(''.join(sub.stdout.readline().decode().split('\n')[:-1]))
                 else:
-                  self.fraction = float(''.join(sub.stdout.readline().split('\n')[:-1]))/2 + .5
+                  self.fraction = float(''.join(sub.stdout.readline().decode().split('\n')[:-1]))/2 + .5
               except ValueError:
                 self.fraction = 1
               while Gtk.events_pending():
