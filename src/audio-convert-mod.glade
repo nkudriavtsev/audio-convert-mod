@@ -3,6 +3,10 @@
 <!--*- mode: xml -*-->
 <interface>
   <requires lib="gtk+" version="3.14"/>
+  <object class="GtkComboBoxText">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+  </object>
   <object class="GtkAboutDialog" id="about">
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
@@ -991,7 +995,7 @@ Harris Zhuang (zh_CN)
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkComboBox" id="main2FormatCombobox">
+                          <object class="GtkComboBoxText" id="main2FormatCombobox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <signal name="changed" handler="on_main2FormatCombobox_changed" swapped="no"/>
@@ -1082,7 +1086,7 @@ Harris Zhuang (zh_CN)
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkComboBox" id="main2ExtensionCombobox">
+                          <object class="GtkComboBoxText" id="main2ExtensionCombobox">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>
@@ -1412,10 +1416,19 @@ Be sure to double-check your selection before clicking "Next".</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkComboBox" id="main2ResampleCombo">
+                          <object class="GtkComboBoxText" id="main2ResampleCombo">
                             <property name="visible">True</property>
-                            <property name="sensitive">False</property>
                             <property name="can_focus">False</property>
+                            <items>
+                              <item translatable="yes">8000 Hz</item>
+                              <item translatable="yes">16000 Hz</item>
+                              <item translatable="yes">22050 Hz</item>
+                              <item translatable="yes">32000 Hz</item>
+                              <item translatable="yes">44100 Hz</item>
+                              <item translatable="yes">48000 Hz</item>
+                              <item translatable="yes">96000 Hz</item>
+                              <item translatable="yes">192000 Hz</item>
+                            </items>
                           </object>
                           <packing>
                             <property name="expand">True</property>

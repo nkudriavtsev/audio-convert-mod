@@ -259,31 +259,6 @@ class acmApp(interface.Controller):
     self.ui.main2QualityCombobox.pack_start(cell, True)
     self.ui.main2QualityCombobox.add_attribute(cell, 'text', 1)
 
-    liststore = Gtk.ListStore(GObject.TYPE_STRING)
-    self.ui.main2FormatCombobox.set_model(liststore)
-    cell = Gtk.CellRendererText()
-    self.ui.main2FormatCombobox.clear()
-    self.ui.main2FormatCombobox.pack_start(cell, True)
-    self.ui.main2FormatCombobox.add_attribute(cell, 'text', 0)
-
-    liststore = Gtk.ListStore(GObject.TYPE_STRING)
-    self.ui.main2ExtensionCombobox.set_model(liststore)
-    cell = Gtk.CellRendererText()
-    self.ui.main2ExtensionCombobox.clear()
-    self.ui.main2ExtensionCombobox.pack_start(cell, True)
-    self.ui.main2ExtensionCombobox.add_attribute(cell, 'text', 0)
-
-    liststore = Gtk.ListStore(GObject.TYPE_STRING)
-    self.ui.main2ResampleCombo.set_model(liststore)
-    cell = Gtk.CellRendererText()
-    self.ui.main2ResampleCombo.clear()
-    self.ui.main2ResampleCombo.pack_start(cell, True)
-    self.ui.main2ResampleCombo.add_attribute(cell, 'text', 0)
-    resampleList = ['8000 Hz', '16000 Hz', '22050 Hz', '32000 Hz',
-      '44100 Hz', '48000 Hz', '96000 Hz', '192000 Hz']
-    for rate in resampleList:
-      liststore.append([rate])
-
     from gi.repository import Pango
     # Selected Files Treeview
     liststore = Gtk.ListStore(GObject.TYPE_STRING, GObject.TYPE_STRING, GObject.TYPE_STRING)
@@ -540,11 +515,10 @@ class acmApp(interface.Controller):
     formats.recheck()
     active = self.ui.main2FormatCombobox.get_active()
     model = self.ui.main2QualityCombobox.get_model().clear()
-    liststore = self.ui.main2FormatCombobox.get_model()
-    liststore.clear()
+    self.ui.main2FormatCombobox.remove_all()
     for format in list(formats.FORMATS.values()):
       if format.get()[0] == True:
-        liststore.append([str(format.__class__.__name__.upper())])
+        self.ui.main2FormatCombobox.append_text(format.__class__.__name__.upper())
     if active >= 0:
       self.ui.main2FormatCombobox.set_active(active)
     else:
@@ -1078,12 +1052,11 @@ class acmApp(interface.Controller):
     qualityModel = self.ui.main2QualityCombobox.get_model()
     qualityModel.clear()
 
-    extensionModel = self.ui.main2ExtensionCombobox.get_model()
-    extensionModel.clear()
+    self.ui.main2ExtensionCombobox.remove_all()
     for row in formats.FORMATS[formatValue.lower()].get()[3]:
       qualityModel.append(row)
     for i in formats.FORMATS[formatValue.lower()].extensions:
-      extensionModel.append(['.%s' % i])
+      self.ui.main2ExtensionCombobox.append_text('.%s' % i)
     self.ui.main2QualityCombobox.set_active(0)
     self.ui.main2ExtensionCombobox.set_active(0)
 
