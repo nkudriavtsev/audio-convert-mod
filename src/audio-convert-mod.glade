@@ -827,12 +827,13 @@ Harris Zhuang (zh_CN)
                         <property name="layout_style">start</property>
                         <child>
                           <object class="GtkButton" id="main1AddButton">
-                            <property name="label" translatable="yes">Add	</property>
+                            <property name="label" translatable="yes">_Add	</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonAdd1</property>
+                            <property name="use_underline">True</property>
                             <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_main1AddButton_clicked" swapped="no"/>
                           </object>
@@ -844,12 +845,13 @@ Harris Zhuang (zh_CN)
                         </child>
                         <child>
                           <object class="GtkButton" id="main1AddDirectoryButton">
-                            <property name="label" translatable="yes">Add directory</property>
+                            <property name="label" translatable="yes">Add _directory</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonAdd2</property>
+                            <property name="use_underline">True</property>
                             <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_main1AddDirectoryButton_clicked" swapped="no"/>
                           </object>
@@ -861,12 +863,13 @@ Harris Zhuang (zh_CN)
                         </child>
                         <child>
                           <object class="GtkButton" id="main1RemoveButton">
-                            <property name="label" translatable="yes">Remove</property>
+                            <property name="label" translatable="yes">_Remove</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="can_default">True</property>
                             <property name="receives_default">False</property>
                             <property name="image">imageButtonRemove</property>
+                            <property name="use_underline">True</property>
                             <property name="always_show_image">True</property>
                             <signal name="clicked" handler="on_main1RemoveButton_clicked" swapped="no"/>
                           </object>
