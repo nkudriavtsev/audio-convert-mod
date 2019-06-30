@@ -16,7 +16,7 @@ BuildRequires:     python3-devel >= 3.6
 BuildRequires:     python3-mutagen
 
 Requires:          python3 >= 3.6
-Requires:          notify-python3
+Requires:          python3-notify2
 # FOSS encoders, decoders, taggers
 Requires:          flac
 Requires:          id3lib
