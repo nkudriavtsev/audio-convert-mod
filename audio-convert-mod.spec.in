@@ -1,5 +1,5 @@
 Name:              audio-convert-mod
-Version:           @VERSION@
+Version:           @PACKAGE_VERSION@
 Release:           1%{?dist}
 BuildArch:         noarch
 Summary:           A simple audio file converter supporting many formats
@@ -66,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jun 30 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0b
+- Update to 4.0.0b (see ChangeLog for details on version changes)
+
 * Mon Dec 7 2009 Stewart Adam <s.adam at diffingo.com> 3.46.0b
 - Update to 3.46.0b (see ChangeLog for details on version changes)
 
