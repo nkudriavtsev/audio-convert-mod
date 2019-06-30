@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #  Copyright (C) 2009 Stewart Adam
 #  This file is part of audio-convert-mod.
@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with audio-convert-mod; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+from __future__ import print_function
 import os
 import sys
 import tarfile
@@ -41,14 +42,14 @@ tags_aac = ['title', 'artist', 'album', '2000', '(1, 0)', 'genre', 'comments']
 # Exception for MP3 with no comments
 tags_mp3 = ['title', 'artist', 'album', '2000', '1', 'genre', '']
 
-total = len(formats.FORMATS.keys())-1 # -1 for WAV
+total = len(list(formats.FORMATS.keys()))-1 # -1 for WAV
 current = 1
-for key in formats.FORMATS.keys():
+for key in list(formats.FORMATS.keys()):
   format = formats.FORMATS[key]
   if key.lower() == 'wav':
     continue
   if not format.get()[0]: # can't encode
-    print _('%(a)i/%(b)i: Binaries for encoding to %(c)s not present - skipping') % {'a': current, 'b': total, 'c': key}
+    print(_('%(a)i/%(b)i: Binaries for encoding to %(c)s not present - skipping') % {'a': current, 'b': total, 'c': key})
     current += 1
     continue
   quality = int(format.get()[3][-1][0]) # highest quality
@@ -62,9 +63,9 @@ for key in formats.FORMATS.keys():
       sub.stderr.readlines()
     assert(os.path.isfile(outfile))
   except:
-    print _('%(a)i/%(b)i: Encoding to %(c)s has failed!') % {'a': current, 'b': total, 'c': key}
+    print(_('%(a)i/%(b)i: Encoding to %(c)s has failed!') % {'a': current, 'b': total, 'c': key})
     sys.exit(1)
-  print _('%(a)i/%(b)i: Encoding to %(c)s has succeeded.') % {'a': current, 'b': total, 'c': key}
+  print(_('%(a)i/%(b)i: Encoding to %(c)s has succeeded.') % {'a': current, 'b': total, 'c': key})
   if not format.get()[2]: # can't read or set tags
     current += 1
     continue
@@ -73,7 +74,7 @@ for key in formats.FORMATS.keys():
     time.sleep(0.1)
     assert(format.getTags(outfile) in [tags, None, tags_aac, tags_mp3])
   except:
-    print _('%(a)i/%(b)i: Tagging metadata on %(c)s has failed!') % {'a': current, 'b': total, 'c': key}
-    print format.getTags(outfile), tags
+    print(_('%(a)i/%(b)i: Tagging metadata on %(c)s has failed!') % {'a': current, 'b': total, 'c': key})
+    print(format.getTags(outfile), tags)
     sys.exit(1)
   current += 1

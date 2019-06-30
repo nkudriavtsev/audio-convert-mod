@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 #  Copyright (C) 2009 Stewart Adam
 #  This file is part of audio-convert-mod.
@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with audio-convert-mod; if not, write to the Free Software
 #  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+from __future__ import print_function
 import os
 import sys
 import tarfile
@@ -32,20 +33,20 @@ outfile = os.path.join(testroot, 'test.wav')
 if os.path.exists(outfile):
   os.remove(outfile)
 
-total = len(formats.FORMATS.keys())-1 # -1 for WAV
+total = len(list(formats.FORMATS.keys()))-1 # -1 for WAV
 current = 1
-for key in formats.FORMATS.keys():
+for key in list(formats.FORMATS.keys()):
   format = formats.FORMATS[key]
   infile = formats.getNewExt(format.extensions[0], outfile)
   if key.lower() == 'wav':
     continue
   if not format.get()[1]: # missing binaries
-    print _('%(a)i/%(b)i: Binaries for decoding from %(c)s not present - skipping') % {'a': current, 'b': total, 'c': key}
+    print(_('%(a)i/%(b)i: Binaries for decoding from %(c)s not present - skipping') % {'a': current, 'b': total, 'c': key})
     current += 1
     continue
   elif not os.path.exists(infile): # can't encode, decode test failed
-    print _('%(a)i/%(b)i: File to decode for format %(c)s was not found.') % {'a': current, 'b': total, 'c': key}
-    print _('This is probably because the encode test has failed.')
+    print(_('%(a)i/%(b)i: File to decode for format %(c)s was not found.') % {'a': current, 'b': total, 'c': key})
+    print(_('This is probably because the encode test has failed.'))
     current += 1
     continue
   try:
@@ -56,7 +57,7 @@ for key in formats.FORMATS.keys():
     assert(os.path.isfile(outfile))
     os.remove(outfile)
   except:
-    print _('%(a)i/%(b)i: Decoding to %(c)s has failed!') % {'a': current, 'b': total, 'c': key}
+    print(_('%(a)i/%(b)i: Decoding to %(c)s has failed!') % {'a': current, 'b': total, 'c': key})
     sys.exit(1)
-  print _('%(a)i/%(b)i: Decoding to %(c)s has succeeded.') % {'a': current, 'b': total, 'c': key}
+  print(_('%(a)i/%(b)i: Decoding to %(c)s has succeeded.') % {'a': current, 'b': total, 'c': key})
   current += 1
