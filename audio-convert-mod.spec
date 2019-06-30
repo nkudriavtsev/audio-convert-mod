@@ -16,7 +16,7 @@ BuildRequires:     python3-devel >= 3.6
 BuildRequires:     python3-mutagen
 
 Requires:          python3 >= 3.6
-Requires:          notify-python3
+Requires:          python3-notify2
 # FOSS encoders, decoders, taggers
 Requires:          flac
 Requires:          id3lib
@@ -66,6 +66,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jun 30 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0b
+- Update to 4.0.0b (see ChangeLog for details on version changes)
+
 * Mon Dec 7 2009 Stewart Adam <s.adam at diffingo.com> 3.46.0b
 - Update to 3.46.0b (see ChangeLog for details on version changes)
 
