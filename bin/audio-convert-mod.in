@@ -27,4 +27,4 @@ prefix="@prefix@"
 datarootdir="@datarootdir@"
 
 # Expands to ${prefix}/share OR ${datarootdir}, which is defined above
-python "@datadir@/audio-convert-mod/acm-runapp.pyw" "$@"
+python3 "@datadir@/audio-convert-mod/acm-runapp.pyw" "$@"
