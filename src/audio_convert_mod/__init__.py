@@ -24,7 +24,7 @@ standard_library.install_aliases()
 from builtins import str
 __author__ = "Stewart Adam <s.adam at diffingo.com>"
 __status__ = "beta"
-__version__ = "3.47.0"
+__version__ = "4.0.0b"
 __license__ = "GNU GPLv2+"
 
 import os
