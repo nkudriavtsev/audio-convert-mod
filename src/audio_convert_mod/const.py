@@ -19,8 +19,8 @@
 """
 All constants/shared functions in the program
 """
-from future import standard_library
-standard_library.install_aliases()
+#from future import standard_library
+#standard_library.install_aliases()
 import os
 import sys
 import getpass

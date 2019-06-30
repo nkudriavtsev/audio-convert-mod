@@ -19,8 +19,8 @@
 audio-convert-mod package initialization
 """
 
-from future import standard_library
-standard_library.install_aliases()
+#from future import standard_library
+#standard_library.install_aliases()
 from builtins import str
 __author__ = "Stewart Adam <s.adam at diffingo.com>"
 __status__ = "beta"

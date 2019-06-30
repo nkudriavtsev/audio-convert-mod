@@ -18,8 +18,8 @@
 """
 Configuration classes for audio-convert-mod
 """
-from future import standard_library
-standard_library.install_aliases()
+#from future import standard_library
+#standard_library.install_aliases()
 from builtins import str
 import configparser
 import os

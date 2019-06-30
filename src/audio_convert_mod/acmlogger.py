@@ -19,7 +19,7 @@
 The audio-convert-mod logger
 Based on fwbackups's fwlogger.py file (2009-07-29)
 """
-from __future__ import print_function
+#from __future__ import print_function
 import datetime
 import logging
 import types
