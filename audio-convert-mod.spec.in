@@ -20,7 +20,6 @@ Requires:          python3-notify2
 # FOSS encoders, decoders, taggers
 Requires:          flac
 Requires:          id3lib
-Requires:          libmp4v2
 Requires:          vorbis-tools
 Requires:          wavpack
 Requires:          python3-mutagen
@@ -66,6 +65,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jun 30 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0b-2
+- Removed libmp4v2 requirement
+
 * Sun Jun 30 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0b
 - Update to 4.0.0b (see ChangeLog for details on version changes)
 
