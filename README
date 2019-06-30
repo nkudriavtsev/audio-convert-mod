@@ -1,7 +1,7 @@
 -- DEPENDENCIES --
 audio-convert-mod requires the following software to be installed:
-  * python >= 2.4
-  * PyGTK >= 2.10 with Glade support
+  * python >= 3.6
+  * PyGObject >= 3.0 with GtkBuild support
   * Mutagen (often called python-mutagen)
 
 Once audio-convert-mod is running, you may select "File > Show Format Conversion
