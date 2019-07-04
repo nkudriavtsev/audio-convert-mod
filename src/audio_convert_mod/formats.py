@@ -403,7 +403,7 @@ class opus(object):
     return sub, command
 
   def encode(self, filename, newname, quality):
-    """Encodes a new OGG file"""
+    """Encodes a new OPUS file"""
     if MSWINDOWS:
       command = 'opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
     else:
