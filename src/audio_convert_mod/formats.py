@@ -396,18 +396,18 @@ class opus(object):
   def decode(self, filename, newname):
     """Decodes a OPUS file"""
     if MSWINDOWS:
-      command = 'opusdec.exe "%(a)s" "%(b)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'opusdec.exe "%(a)s" "%(b)s"' % {'a': filename, 'b': newname}
     else:
-      command = "opusdec '%(a)s' '%(b)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "opusdec '%(a)s' '%(b)s'" % {'a': filename, 'b': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
   def encode(self, filename, newname, quality):
     """Encodes a new OPUS file"""
     if MSWINDOWS:
-      command = 'opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "!/^[ ]+/{gsub(/%%/,\\" \\");if (NR>2) print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
     else:
-      command = "opusenc --bitrate %(a)i '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
+      command = "opusenc --bitrate %(a)i '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '!/^[ ]+/{gsub(/%%/,\" \");if (NR>2) print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 

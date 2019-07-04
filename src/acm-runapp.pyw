@@ -1237,7 +1237,7 @@ class acmApp(interface.Controller):
         sub, command = inputFormatObject.decode(escapeSingleQuote(i), escapeSingleQuote(wavfile))
         self.logger.logmsg("DEBUG", _("Executing command: %s") % command)
         self.processId = sub.pid
-        if inputFormat == 'AC3': # a52dec doesn't support progress
+        if inputFormat == 'AC3' || inputFormat == 'opus': # a52dec and opusdec doesn't support progress
           self.fraction = -1
           progressBar.startPulse()
           while sub.poll() == None:
