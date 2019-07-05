@@ -86,7 +86,16 @@ def saveTrackInfo(audiotags, tags):
   audiotags["comment"] = tags[6]
   audiotags.save()
 
-class wav(object):
+class codec(object):
+  """codec base class"""
+  def decoderHasProgress(self):
+    return self.__decHasProgress
+  
+  def encoderHasProgress(self):
+    return self.__encHasProgress
+
+
+class wav(codec):
   """The WAV format class."""
   def __init__(self):
     """Initialize"""
@@ -98,6 +107,8 @@ class wav(object):
     self.__qualities = [
     ['0', _('(Based on original file)')]
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -120,7 +131,7 @@ class wav(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class mp3(object):
+class mp3(codec):
   """The MP3 format class. Requires lame."""
   def __init__(self):
     """Initialize"""
@@ -142,6 +153,8 @@ class mp3(object):
     ['-3', 'Preset Extreme'],
     ['-4', 'Preset Insane']
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -218,7 +231,7 @@ class mp3(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class flac(object):
+class flac(codec):
   """The FLAC format class. Requires flac."""
   def __init__(self):
     """Initialize"""
@@ -234,6 +247,8 @@ class flac(object):
     ['6', _('Lossless, high compression (level 6)')],
     ['8', _('Lossless, highest compression (level 8)')]
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -279,7 +294,7 @@ class flac(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class ogg(object):
+class ogg(codec):
   """The OGG format class. Requires ogg{enc,dec,info} (vorbis-tools)"""
   def __init__(self):
     """Initialize"""
@@ -297,6 +312,8 @@ class ogg(object):
     ['256', '256 kbps'],
     ['320', '320 kbps']
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -346,7 +363,7 @@ class ogg(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class opus(object):
+class opus(codec):
   """The OPUS format class. Requires ogg{enc,dec,info} (opus-tools)"""
   def __init__(self):
     """Initialize"""
@@ -365,6 +382,8 @@ class opus(object):
     ['256', '256 kbps'],
     ['320', '320 kbps']
                        ]
+    self.__decHasProgress = False
+    self.__encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -414,7 +433,7 @@ class opus(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class mpc(object):
+class mpc(codec):
   """The MPC format class. Requires mpp{dec,enc} (musepack-tools)"""
   def __init__(self):
     """Initialize"""
@@ -435,6 +454,9 @@ class mpc(object):
     ['9','~300 kbps'],
     ['10','~350 kbps']
                       ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
+
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -485,7 +507,7 @@ class mpc(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class ape(object):
+class ape(codec):
   """The Monkey's Audio format class. Requires mac."""
   def __init__(self):
     """Initialize"""
@@ -501,6 +523,8 @@ class ape(object):
     ['4000','4000'],
     ['5000','5000'],
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -546,7 +570,7 @@ class ape(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class aac(object):
+class aac(codec):
   """The AAC format class. Requires faad, faac."""
   def __init__(self):
     """Initialize"""
@@ -563,6 +587,8 @@ class aac(object):
     ['270','~256 kbps (270%)'],
     ['500','~320 kbps (500%)']
                       ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -641,7 +667,7 @@ class aac(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class nero_aac(object):
+class nero_aac(codec):
   """The Nero AAC format class. Requires neroAacDec, neroAacEnc."""
   def __init__(self):
     """Initialize"""
@@ -662,6 +688,8 @@ class nero_aac(object):
     ['85','~332 kbps'],
     ['95','~381 kbps']
                       ]
+    self.__decHasProgress = False
+    self.__encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -740,7 +768,7 @@ class nero_aac(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class fdkaac(object):
+class fdkaac(codec):
   """The Fraunhofer AAC format class. Requires faad, fdkaac."""
   def __init__(self):
     """Initialize"""
@@ -762,6 +790,8 @@ class fdkaac(object):
     ['-4', 'VBR ~128 kbps'],
     ['-5', 'VBR ~182 kbps']
                       ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -846,7 +876,7 @@ class fdkaac(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class mplayer(object):
+class mplayer(codec):
   """MPlayer format class for some misc. mplayer-compatible filetypes"""
   def __init__(self):
     """Initialize"""
@@ -858,6 +888,8 @@ class mplayer(object):
     self.__qualities = [
     ['-', _('(Based on original file)')]
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -892,7 +924,7 @@ class mplayer(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class ac3(object):
+class ac3(codec):
   """a52dec >> AC3"""
   def __init__(self):
     """Initialize"""
@@ -910,6 +942,8 @@ class ac3(object):
     ['256', '256 kbps'],
     ['320', '320 kbps'],
                        ]
+    self.__decHasProgress = False
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -959,7 +993,7 @@ class ac3(object):
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
-class wv(object):
+class wv(codec):
   """The wavpack format class. Requires wvunpack, wavpack (wavpack)"""
   def __init__(self):
     """Initialize"""
@@ -973,6 +1007,8 @@ class wv(object):
     ['1', _('High compression')],
     ['2', _('Very high compression')],
                        ]
+    self.__decHasProgress = True
+    self.__encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
