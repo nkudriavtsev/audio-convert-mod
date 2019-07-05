@@ -837,9 +837,9 @@ class fdkaac(object):
       preset = '-m%(a)i' % {'a' : -quality}
 
     if MSWINDOWS:
-      command = 'fdkaac.exe -f0 %(a)s "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $3/100;fflush();}"' % {'a': preset, 'b': filename, 'c': newname}
+      command = 'fdkaac.exe -f0 %(a)s "%(b)s" -o "%(c)s" 2>&1 | awk -vRS="\\r" "/[[:digit:]+%%]/{gsub(/[[%%\\]]/, \\"\\", $1);print $1/100;fflush()}"' % {'a': preset, 'b': filename, 'c': newname}
     else:
-      command = "fdkaac -f0 %(a)s '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $3/100;fflush();}'" % {'a': preset, 'b': filename, 'c': newname}
+      command = "fdkaac -f0 %(a)s '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '/[[:digit:]+%%]/{gsub(/[[%%\]]/, \"\", $1);print $1/100;fflush();}'" % {'a': preset, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
