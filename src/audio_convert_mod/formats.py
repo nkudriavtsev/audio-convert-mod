@@ -415,18 +415,18 @@ class opus(codec):
   def decode(self, filename, newname):
     """Decodes a OPUS file"""
     if MSWINDOWS:
-      command = 'opusdec.exe "%(a)s" "%(b)s"' % {'a': filename, 'b': newname}
+      command = 'echo 0;opusdec.exe "%(a)s" "%(b)s"' % {'a': filename, 'b': newname}
     else:
-      command = "opusdec '%(a)s' '%(b)s'" % {'a': filename, 'b': newname}
+      command = "echo 0;opusdec '%(a)s' '%(b)s'" % {'a': filename, 'b': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
   def encode(self, filename, newname, quality):
     """Encodes a new OPUS file"""
     if MSWINDOWS:
-      command = 'opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'echo 0;opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
     else:
-      command = "opusenc --bitrate %(a)i '%(b)s' '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
+      command = "echo 0;opusenc --bitrate %(a)i '%(b)s' '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
@@ -750,18 +750,18 @@ class nero_aac(codec):
   def decode(self, filename, newname):
     """Decodes a AAC file with Nero decoder"""
     if MSWINDOWS:
-      command = 'neroAacDec.exe -if "%(a)s" -of "%(b)s"' % {'a': filename, 'b': newname}
+      command = 'echo 0;neroAacDec.exe -if "%(a)s" -of "%(b)s"' % {'a': filename, 'b': newname}
     else:
-      command = "neroAacDec -if '%(a)s' -of '%(b)s'" % {'a': filename, 'b': newname}
+      command = "echo 0;neroAacDec -if '%(a)s' -of '%(b)s'" % {'a': filename, 'b': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
   def encode(self, filename, newname, quality):
     """Encodes a new AAC file with Nero encoder"""
     if MSWINDOWS:
-      command = 'neroAacEnc.exe -q 0.%(a)02i -if "%(b)s" -of "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'echo 0;neroAacEnc.exe -q 0.%(a)02i -if "%(b)s" -of "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
     else:
-      command = "neroAacEnc -q 0.%(a)02i -if '%(b)s' -of '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
+      command = "echo 0;neroAacEnc -q 0.%(a)02i -if '%(b)s' -of '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
