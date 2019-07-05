@@ -1,3 +1,11 @@
 *.bak
 *~
 **/__pycache__/*
+Makefile
+*.log
+*.status
+autom4te.cache/*
+bin/audio-convert-mod
+po/Makefile.in
+po/POTFILES
+po/stamp-it
