@@ -722,18 +722,18 @@ class nero_aac(object):
   def decode(self, filename, newname):
     """Decodes a AAC file with Nero decoder"""
     if MSWINDOWS:
-      command = 'neroAacDec.exe -if "%(a)s" -of "%(b)s" 2>&1 | awk.exe -vRS="\\r" "$1 ~ /Processed/ {print $2/100};fflush();"' % {'a': filename, 'b': newname}
+      command = 'neroAacDec.exe -if "%(a)s" -of "%(b)s"' % {'a': filename, 'b': newname}
     else:
-      command = "neroAacDec -if '%(a)s' -of '%(b)s' 2>&1 | awk -vRS='\\r' '$1 ~ /Processed/ {print $2/100};fflush();'" % {'a': filename, 'b': newname}
+      command = "neroAacDec -if '%(a)s' -of '%(b)s'" % {'a': filename, 'b': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
   def encode(self, filename, newname, quality):
     """Encodes a new AAC file with Nero encoder"""
     if MSWINDOWS:
-      command = 'neroAacEnc.exe -q 0.%(a)02i -if "%(b)s" -of "%(c)s" 2>&1 | awk.exe -vRS="\\r" "$1 ~ /Processed/ {print $2/100};fflush();"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'neroAacEnc.exe -q 0.%(a)02i -if "%(b)s" -of "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
     else:
-      command = "neroAacEnc -q 0.%(a)02i -if '%(b)s' -of '%(c)s' 2>&1 | awk -vRS='\\r' '$1 ~ /Processed/ {print $2/100};fflush();'" % {'a': quality, 'b': filename, 'c': newname}
+      command = "neroAacEnc -q 0.%(a)02i -if '%(b)s' -of '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
