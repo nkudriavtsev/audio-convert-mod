@@ -1,5 +1,5 @@
 Name:              audio-convert-mod
-Version:           4.0.0b
+Version:           4.0.0
 Release:           3%{?dist}
 BuildArch:         noarch
 Summary:           A simple audio file converter supporting many formats
