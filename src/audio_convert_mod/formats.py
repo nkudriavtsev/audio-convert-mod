@@ -89,10 +89,10 @@ def saveTrackInfo(audiotags, tags):
 class codec(object):
   """codec base class"""
   def decoderHasProgress(self):
-    return self.__decHasProgress
+    return self._decHasProgress
   
   def encoderHasProgress(self):
-    return self.__encHasProgress
+    return self._encHasProgress
 
 
 class wav(codec):
@@ -107,8 +107,8 @@ class wav(codec):
     self.__qualities = [
     ['0', _('(Based on original file)')]
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -153,8 +153,8 @@ class mp3(codec):
     ['-3', 'Preset Extreme'],
     ['-4', 'Preset Insane']
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -247,8 +247,8 @@ class flac(codec):
     ['6', _('Lossless, high compression (level 6)')],
     ['8', _('Lossless, highest compression (level 8)')]
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -312,8 +312,8 @@ class ogg(codec):
     ['256', '256 kbps'],
     ['320', '320 kbps']
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -382,8 +382,8 @@ class opus(codec):
     ['256', '256 kbps'],
     ['320', '320 kbps']
                        ]
-    self.__decHasProgress = False
-    self.__encHasProgress = False
+    self._decHasProgress = False
+    self._encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -454,8 +454,8 @@ class mpc(codec):
     ['9','~300 kbps'],
     ['10','~350 kbps']
                       ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
 
   def check(self):
@@ -523,8 +523,8 @@ class ape(codec):
     ['4000','4000'],
     ['5000','5000'],
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -587,8 +587,8 @@ class aac(codec):
     ['270','~256 kbps (270%)'],
     ['500','~320 kbps (500%)']
                       ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -688,8 +688,8 @@ class nero_aac(codec):
     ['85','~332 kbps'],
     ['95','~381 kbps']
                       ]
-    self.__decHasProgress = False
-    self.__encHasProgress = False
+    self._decHasProgress = False
+    self._encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -790,8 +790,8 @@ class fdkaac(codec):
     ['-4', 'VBR ~128 kbps'],
     ['-5', 'VBR ~182 kbps']
                       ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -888,8 +888,8 @@ class mplayer(codec):
     self.__qualities = [
     ['-', _('(Based on original file)')]
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = False
+    self._decHasProgress = True
+    self._encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -942,8 +942,8 @@ class ac3(codec):
     ['256', '256 kbps'],
     ['320', '320 kbps'],
                        ]
-    self.__decHasProgress = False
-    self.__encHasProgress = True
+    self._decHasProgress = False
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -1007,8 +1007,8 @@ class wv(codec):
     ['1', _('High compression')],
     ['2', _('Very high compression')],
                        ]
-    self.__decHasProgress = True
-    self.__encHasProgress = True
+    self._decHasProgress = True
+    self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
