@@ -9,3 +9,4 @@ bin/audio-convert-mod
 po/Makefile.in
 po/POTFILES
 po/stamp-it
+test-driver
