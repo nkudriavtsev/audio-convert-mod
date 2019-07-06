@@ -1,6 +1,6 @@
 Name:              audio-convert-mod
 Version:           @PACKAGE_VERSION@
-Release:           2%{?dist}
+Release:           3%{?dist}
 BuildArch:         noarch
 Summary:           A simple audio file converter supporting many formats
 Group:             Applications/Multimedia
@@ -65,6 +65,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Jul 06 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-3
+- Status is changed from beta to release 
+- Fixed progress indicator for codecs without the one
+
 * Sun Jun 30 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0b-2
 - Removed libmp4v2 requirement
 
