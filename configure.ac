@@ -24,7 +24,6 @@ AC_CONFIG_FILES([Makefile
                  src/audio_convert_mod/Makefile
                  src/audio_convert_mod/__init__.py
                  po/Makefile.in
-                 audio-convert-mod.spec
                  ])
 
 # ...Ready, set, go!
