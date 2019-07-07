@@ -88,12 +88,21 @@ def saveTrackInfo(audiotags, tags):
 
 class codec(object):
   """codec base class"""
+  def __init__(self):
+    self._decHasProgress = False
+    self._encHasProgress = False
+
   def decoderHasProgress(self):
     return self._decHasProgress
-  
+
   def encoderHasProgress(self):
     return self._encHasProgress
 
+  def decoderProgressFilter(self):
+    return None
+
+  def encoderProgressFilter(self):
+    return None
 
 class wav(codec):
   """The WAV format class."""
@@ -107,21 +116,21 @@ class wav(codec):
     self.__qualities = [
     ['0', _('(Based on original file)')]
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = False
+    #self._encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
     return True
 
-  def decode(self, filename, newname):
-    command = "echo .5"
+  def decode(self, filename):
+    command = "cat \"%(a)s\"" % {a: filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
-    command = "echo 1"
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+  def encode(self, inpipe, newname, quality):
+    command = "tee \"%(a)s\"" % {a: newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
   def get(self):
@@ -153,8 +162,8 @@ class mp3(codec):
     ['-3', 'Preset Extreme'],
     ['-4', 'Preset Insane']
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -169,16 +178,22 @@ class mp3(codec):
     """Return all information on the format"""
     return [self.__encode, self.__decode, self.__tags, self.__qualities]
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' -F'[ /]+' '(NR>2){print $2/$3;fflush();}'"
+
+  def decode(self, filename):
     """Decodes a MP3 file"""
     if MSWINDOWS:
-      command = 'lame.exe --decode --mp3input "%(a)s" "%(b)s" 2>&1 | awk.exe -vRS="\\r" -F"[ /]+" "(NR>2){print $2/$3;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'lame.exe --decode --mp3input "%(a)s" -' % {'a': filename}
     else:
-      command = "lame --decode --mp3input '%(a)s' '%(b)s' 2>&1 | awk -vRS='\\r' -F'[ /]+' '(NR>2){print $2/$3;fflush();}'" % {'a': filename, 'b': newname}
+      command = "lame --decode --mp3input '%(a)s' -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>3){gsub(/[()%%|]/,\" \");if($1 != \"\") print $2/100;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new MP3 file"""
     preset = 'standard'
     if quality > 0 :
@@ -193,10 +208,10 @@ class mp3(codec):
       preset = 'insane'
 
     if MSWINDOWS:
-      command = 'lame.exe -m auto --preset %(a)s "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>3){gsub(/[()%%|]/,\\" \\");if($1 != \\"\\") print $2/100;fflush();}"' % {'a': preset, 'b': filename, 'c': newname}
+      command = 'lame.exe -m auto --preset %(a)s - "%(c)s"' % {'a': preset, 'c': newname}
     else:
-      command = "lame -m auto --preset %(a)s '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>3){gsub(/[()%%|]/,\" \");if($1 != \"\") print $2/100;fflush();}'" % {'a': preset, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "lame -m auto --preset %(a)s - '%(c)s'" % {'a': preset, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
   def getTags(self, filename):
@@ -247,8 +262,8 @@ class flac(codec):
     ['6', _('Lossless, high compression (level 6)')],
     ['8', _('Lossless, highest compression (level 8)')]
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -273,22 +288,28 @@ class flac(codec):
     audiotags = FLAC(filename)
     saveTrackInfo(audiotags, tags)
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' -F':' '!/done/{gsub(/ /,\"\");gsub(/%% complete/,\"\");gsub(/%%complete/,\"\");if(NR>1) print $2/100;fflush();}'"
+
+  def decode(self, filename):
     """Decodes a FLAC file"""
     if MSWINDOWS:
-      command = 'flac.exe -d -f "%(a)s" -o "%(b)s" 2>&1 | awk.exe -vRS="\\r" -F":" "!/done/{gsub(/ /,\\"\\");gsub(/%% complete/,\\"\\");;gsub(/%%complete/,\\"\\");if(NR>1) print $2/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'flac.exe -d -f "%(a)s" -o -' % {'a': filename}
     else:
-      command = "flac -d -f '%(a)s' -o '%(b)s' 2>&1 | awk -vRS='\\r' -F':' '!/done/{gsub(/ /,\"\");gsub(/%% complete/,\"\");;gsub(/%%complete/,\"\");if(NR>1) print $2/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "flac -d -f '%(a)s' -o -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\\r' -F':' '!/wrote/{gsub(/ /,\"\");if(NR>1)print $2/100;fflush();}' | awk -F'%%' '{printf $1\"\\n\";fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new FLAC file"""
     if MSWINDOWS:
-      command = 'flac.exe -f --compression-level-%(a)i "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\\r" -F":" "!/wrote/{gsub(/ /,\\"\\");if(NR>1)print $2/100;fflush();}" | awk.exe -F"%%" "{printf $1\\"\\n\\";fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'flac.exe -f --compression-level-%(a)i - -o "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "flac -f --compression-level-%(a)i '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' -F':' '!/wrote/{gsub(/ /,\"\");if(NR>1)print $2/100;fflush();}' | awk -F'%%' '{printf $1\"\\n\";fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "flac -f --compression-level-%(a)i - -o '%(c)s'" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
@@ -312,8 +333,8 @@ class ogg(codec):
     ['256', '256 kbps'],
     ['320', '320 kbps']
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -342,22 +363,28 @@ class ogg(codec):
     audiotags = OggVorbis(filename)
     saveTrackInfo(audiotags, tags)
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'"
+
+  def decode(self, filename):
     """Decodes a OGG file"""
     if MSWINDOWS:
-      command = 'oggdec.exe "%(a)s" -o "%(b)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'oggdec.exe "%(a)s" -o -' % {'a': filename}
     else:
-      command = "oggdec '%(a)s' -o '%(b)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "oggdec '%(a)s' -o -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new OGG file"""
     if MSWINDOWS:
-      command = 'oggenc.exe -b %(a)i "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'oggenc.exe -b %(a)i - -o "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "oggenc -b %(a)i '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "oggenc -b %(a)i - -o '%(c)s'" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
@@ -382,8 +409,8 @@ class opus(codec):
     ['256', '256 kbps'],
     ['320', '320 kbps']
                        ]
-    self._decHasProgress = False
-    self._encHasProgress = False
+    #self._decHasProgress = False
+    #self._encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -412,22 +439,22 @@ class opus(codec):
     audiotags = OggOpus(filename)
     saveTrackInfo(audiotags, tags)
 
-  def decode(self, filename, newname):
+  def decode(self, filename):
     """Decodes a OPUS file"""
     if MSWINDOWS:
-      command = 'echo 0;opusdec.exe "%(a)s" "%(b)s"' % {'a': filename, 'b': newname}
+      command = 'opusdec.exe "%(a)s" -' % {'a': filename}
     else:
-      command = "echo 0;opusdec '%(a)s' '%(b)s'" % {'a': filename, 'b': newname}
+      command = "opusdec '%(a)s' -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encode(self, inpipe, newname, quality):
     """Encodes a new OPUS file"""
     if MSWINDOWS:
-      command = 'echo 0;opusenc.exe --bitrate %(a)i "%(b)s" "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'opusenc.exe --bitrate %(a)i - "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "echo 0;opusenc --bitrate %(a)i '%(b)s' '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "opusenc --bitrate %(a)i - '%(c)s'" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
@@ -454,8 +481,8 @@ class mpc(codec):
     ['9','~300 kbps'],
     ['10','~350 kbps']
                       ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
 
   def check(self):
@@ -485,22 +512,28 @@ class mpc(codec):
     audiotags = Musepack(filename)
     saveTrackInfo(audiotags, tags)
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' -F'[ (]+' '!/s/{gsub(/(%%)/,\" \");if(NR>5)print $5/100;fflush();}'"
+
+  def decode(self, filename):
     """Decodes a MPC file"""
     if MSWINDOWS:
-      command = 'mppdec.exe "%(a)s" "%(b)s" 2>&1 | awk.exe -vRS="\\r" -F"[ (]+" "!/s/{gsub(/(%%)/,\\" \\");if(NR>5)print $5/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'mppdec.exe "%(a)s" -' % {'a': filename}
     else:
-      command = "mppdec '%(a)s' '%(b)s' 2>&1 | awk -vRS='\\r' -F'[ (]+' '!/s/{gsub(/(%%)/,\" \");if(NR>5)print $5/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "mppdec '%(a)s' -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\\r' '!/^$/{if (NR>5) print $1/100;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new MPC file"""
     if MSWINDOWS:
-      command = 'mppenc.exe --quality %(a)i --overwrite "%(b)s" "%(c)s" 2>&1 | awk.exe -vRS="\\r" "!/^$/{if (NR>5) print $1/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'mppenc.exe --quality %(a)i --overwrite - "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "mppenc --quality %(a)i --overwrite '%(b)s' '%(c)s' 2>&1 | awk -vRS='\\r' '!/^$/{if (NR>5) print $1/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "mppenc --quality %(a)i --overwrite - '%(c)s'" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 
@@ -523,8 +556,8 @@ class ape(codec):
     ['4000','4000'],
     ['5000','5000'],
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -549,22 +582,28 @@ class ape(codec):
     audiotags = APEv2(filename)
     saveTrackInfo(audiotags, tags)
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'"
+
+  def decode(self, filename):
     """Decodes a MAC file"""
     if MSWINDOWS:
-      command = 'mac.exe "%(a)s" "%(b)s" -d 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'mac.exe "%(a)s" - -d' % {'a': filename}
     else:
-      command = "mac '%(a)s' '%(b)s' -d 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "mac '%(a)s' - -d" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
+
+  def encoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'"
 
   def encode(self, filename, newname, quality):
     """Encodes a new MAC file"""
     if MSWINDOWS:
-      command = 'mac.exe "%(b)s" "%(c)s" -c%(a)i 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $2/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'mac.exe - "%(c)s" -c%(a)i' % {'a': quality, 'c': newname}
     else:
-      command = "mac '%(b)s' '%(c)s' -c%(a)i 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $2/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "mac - '%(c)s' -c%(a)i" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
@@ -587,8 +626,8 @@ class aac(codec):
     ['270','~256 kbps (270%)'],
     ['500','~320 kbps (500%)']
                       ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -646,22 +685,28 @@ class aac(codec):
     audiotags["\xa9cmt"] = tags[6]
     audiotags.save()
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $1/100;fflush();}'"
+
+  def decode(self, filename:
     """Decodes a AAC file"""
     if MSWINDOWS:
-      command = 'faad.exe "%(a)s" -o "%(b)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $1/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'faad.exe "%(a)s" -o -' % {'a': filename}
     else:
-      command = "faad '%(a)s' -o '%(b)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $1/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "faad '%(a)s' -o -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $3/100;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new AAC file"""
     if MSWINDOWS:
-      command = 'faac.exe -w -q %(a)i "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $3/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'faac.exe -w -q %(a)i - -o "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "faac -w -q %(a)i '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $3/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "faac -w -q %(a)i - -o '%(c)s'" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
@@ -747,21 +792,21 @@ class nero_aac(codec):
     audiotags["\xa9cmt"] = tags[6]
     audiotags.save()
 
-  def decode(self, filename, newname):
+  def decode(self, filename):
     """Decodes a AAC file with Nero decoder"""
     if MSWINDOWS:
-      command = 'echo 0;neroAacDec.exe -if "%(a)s" -of "%(b)s"' % {'a': filename, 'b': newname}
+      command = 'neroAacDec.exe -if "%(a)s" -of -' % {'a': filename}
     else:
-      command = "echo 0;neroAacDec -if '%(a)s' -of '%(b)s'" % {'a': filename, 'b': newname}
+      command = "echo 0;neroAacDec -if '%(a)s' -of -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encode(self, inpipe, newname, quality):
     """Encodes a new AAC file with Nero encoder"""
     if MSWINDOWS:
-      command = 'echo 0;neroAacEnc.exe -q 0.%(a)02i -if "%(b)s" -of "%(c)s"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'neroAacEnc.exe -q 0.%(a)02i -if - -of "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "echo 0;neroAacEnc -q 0.%(a)02i -if '%(b)s' -of '%(c)s'" % {'a': quality, 'b': filename, 'c': newname}
+      command = "neroAacEnc -q 0.%(a)02i -if - -of '%(c)s'" % {'a': quality, 'c': newname}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
@@ -790,8 +835,8 @@ class fdkaac(codec):
     ['-4', 'VBR ~128 kbps'],
     ['-5', 'VBR ~182 kbps']
                       ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -849,16 +894,22 @@ class fdkaac(codec):
     audiotags["\xa9cmt"] = tags[6]
     audiotags.save()
 
-  def decode(self, filename, newname):
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $1/100;fflush();}'"
+
+  def decode(self, filename):
     """Decodes a AAC file"""
     if MSWINDOWS:
-      command = 'faad.exe "%(a)s" -o "%(b)s" 2>&1 | awk.exe -vRS="\\r" "(NR>1){gsub(/%%/,\\" \\");print $1/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'faad.exe "%(a)s" -o -' % {'a': filename}
     else:
-      command = "faad '%(a)s' -o '%(b)s' 2>&1 | awk -vRS='\\r' '(NR>1){gsub(/%%/,\" \");print $1/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "faad '%(a)s' -o -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\\r' '/[[:digit:]+%%]/{gsub(/[[%%\]]/, \"\", $1);print $1/100;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new AAC file"""
     preset = '-b256'
     if quality > 0 :
@@ -867,10 +918,10 @@ class fdkaac(codec):
       preset = '-m%(a)i' % {'a' : -quality}
 
     if MSWINDOWS:
-      command = 'fdkaac.exe -f0 %(a)s "%(b)s" -o "%(c)s" 2>&1 | awk -vRS="\\r" "/[[:digit:]+%%]/{gsub(/[[%%\\]]/, \\"\\", $1);print $1/100;fflush()}"' % {'a': preset, 'b': filename, 'c': newname}
+      command = 'fdkaac.exe -f0 %(a)s - -o "%(c)s"' % {'a': preset, 'c': newname}
     else:
-      command = "fdkaac -f0 %(a)s '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\\r' '/[[:digit:]+%%]/{gsub(/[[%%\]]/, \"\", $1);print $1/100;fflush();}'" % {'a': preset, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "fdkaac -f0 %(a)s - -o '%(c)s'" % {'a': preset, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
@@ -888,8 +939,8 @@ class mplayer(codec):
     self.__qualities = [
     ['-', _('(Based on original file)')]
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = False
+    #self._decHasProgress = True
+    #self._encHasProgress = False
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -911,13 +962,16 @@ class mplayer(codec):
     """Sets the metadata on filename"""
     return
 
+  def decoderProgressFilter(self):
+    return "awk -vRS='\\r' '($2~/^[-+]?[0-9]/ && $5~/^[-+]?[0-9]/){print $2/$5*100;fflush();}'"
+
   # FIXME: Finish this
-  def decode(self, filename, newname):
+  def decode(self, filename):
     """Decodes a mplayer-playable file"""
     if MSWINDOWS:
-      command = 'mplayer.exe -quiet -vo null -vc dummy -ao pcm:waveheader:file="%(b)s" "%(a)s" 2>&1 | awk.exe -vRS="\\r" "($2~/^[-+]?[0-9]/ && $5~/^[-+]?[0-9]/){print $2/$5*100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'mplayer.exe -quiet -vo null -vc dummy -ao pcm:waveheader:file=- "%(a)s"' % {'a': filename}
     else:
-      command = "mplayer -quiet -vo null -vc dummy -ao pcm:waveheader:file='%(b)s' '%(a)s' 2>&1 | awk -vRS='\\r' '($2~/^[-+]?[0-9]/ && $5~/^[-+]?[0-9]/){print $2/$5*100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "mplayer -quiet -vo null -vc dummy -ao pcm:waveheader:file=- '%(a)s'" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
@@ -942,8 +996,8 @@ class ac3(codec):
     ['256', '256 kbps'],
     ['320', '320 kbps'],
                        ]
-    self._decHasProgress = False
-    self._encHasProgress = True
+    #self._decHasProgress = False
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -971,22 +1025,25 @@ class ac3(codec):
       return
     return
 
-  def decode(self, filename, newname):
+  def decode(self, filename):
     """Decodes a AC3 file"""
     if MSWINDOWS:
-      command = 'echo 0;a52dec.exe -o wav "%(a)s" > "%(b)s"' % {'a': filename, 'b': newname}
+      command = 'a52dec.exe -o wav "%(a)s"' % {'a': filename}
     else:
-      command = "echo 0;a52dec -o wav '%(a)s' > '%(b)s'" % {'a': filename, 'b': newname}
+      command = "a52dec -o wav '%(a)s'" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new AC3 file"""
     if MSWINDOWS:
-      command = 'echo 0;ffmpeg.exe -i "%(b)s" -y -ab %(a)ik -f ac3 "%(c)s" 2>&1 | awk.exe -vRS="\10\10\10\10\10\10" "(NR>1){gsub(/%%/,\\" \\");if($1 != \\"\\") print $1;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'ffmpeg.exe -i - -y -ab %(a)ik -f ac3 "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "echo 0;ffmpeg -i '%(b)s' -y -ab %(a)ik -f ac3 '%(c)s' 2>&1 | awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "ffmpeg -i - -y -ab %(a)ik -f ac3 '%(c)s'" % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.inpipe)
     return sub, command
 
 
@@ -1007,8 +1064,8 @@ class wv(codec):
     ['1', _('High compression')],
     ['2', _('Very high compression')],
                        ]
-    self._decHasProgress = True
-    self._encHasProgress = True
+    #self._decHasProgress = True
+    #self._encHasProgress = True
 
   def check(self):
     """Check if the required program(s) exist"""
@@ -1037,17 +1094,23 @@ class wv(codec):
     audiotags = WavPack(filename)
     saveTrackInfo(audiotags, tags)
 
+  def decoderProgressFilter(self):
+    return "awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1/100;fflush();}'"
+
   # -c || -i for lossless||lossy.... I smell workarounds :/
-  def decode(self, filename, newname):
+  def decode(self, filename):
     """Decodes a WVPk file"""
     if MSWINDOWS:
-      command = 'wvunpack.exe -y "%(a)s" -o "%(b)s" 2>&1 | awk.exe -vRS="\10\10\10\10\10\10" "(NR>1){gsub(/%%/,\\" \\");if($1 != \\"\\") print $1/100;fflush();}"' % {'a': filename, 'b': newname}
+      command = 'wvunpack.exe -y "%(a)s" -o -' % {'a': filename}
     else:
-      command = "wvunpack -y '%(a)s' -o '%(b)s' 2>&1 | awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1/100;fflush();}'" % {'a': filename, 'b': newname}
+      command = "wvunpack -y '%(a)s' -o -" % {'a': filename}
     sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     return sub, command
 
-  def encode(self, filename, newname, quality):
+  def encoderProgressFilter(self):
+    return "awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1/100;fflush();}'"
+
+  def encode(self, inpipe, newname, quality):
     """Encodes a new WVPK file"""
     if quality == 0:
       quality = '-f'
@@ -1056,10 +1119,10 @@ class wv(codec):
     elif quality == 2:
       quality = '-hh'
     if MSWINDOWS:
-      command = 'wavpack.exe -y %(a)s "%(b)s" -o "%(c)s" 2>&1 | awk.exe -vRS="\10\10\10\10\10\10" "(NR>1){gsub(/%%/,\\" \\");if($1 != \\"\\") print $1/100;fflush();}"' % {'a': quality, 'b': filename, 'c': newname}
+      command = 'wavpack.exe -y %(a)s - -o "%(c)s"' % {'a': quality, 'c': newname}
     else:
-      command = "wavpack -y %(a)s '%(b)s' -o '%(c)s' 2>&1 | awk -vRS='\10\10\10\10\10\10' '(NR>1){gsub(/%%/,\" \");if($1 != \"\") print $1/100;fflush();}'" % {'a': quality, 'b': filename, 'c': newname}
-    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+      command = "wavpack -y %(a)s - -o '%(c)s' 2>&1 | " % {'a': quality, 'c': newname}
+    sub = subprocess.Popen(command, shell=True, env=environ, stderr=subprocess.PIPE, stdout=subprocess.PIPE, stdin=inpipe)
     return sub, command
 
 # -----------------------------------------------------------------------------
