@@ -65,7 +65,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Wed Dec 03 2020 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-4
+* Thu Dec 03 2020 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-4
 - DATADIRNAME correction
 
 * Sun Jul 06 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-3
