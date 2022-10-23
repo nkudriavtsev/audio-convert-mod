@@ -68,7 +68,7 @@ rm -rf $RPM_BUILD_ROOT
 * Thu Dec 03 2020 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-4
 - DATADIRNAME correction
 
-* Sun Jul 06 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-3
+* Sat Jul 06 2019 Nicholas Kudriavtsev <nkudriavtsev at gmail.com> 4.0.0-3
 - Status is changed from beta to release 
 - Fixed progress indicator for codecs without the one
 
