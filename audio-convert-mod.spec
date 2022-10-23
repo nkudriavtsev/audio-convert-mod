@@ -6,7 +6,7 @@ Summary:           A simple audio file converter supporting many formats
 Group:             Applications/Multimedia
 License:           GPLv2+
 URL:               http://www.diffingo.com/oss/audio-convert-mod
-Source0:           http://downloads.diffingo.com/audio-convert-mod/audio-convert-mod-%{version}.tar.bz2
+Source0:           https://downloads.diffingo.com/audio-convert-mod/audio-convert-mod-%{version}.tar.bz2
 BuildRoot:         %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:     desktop-file-utils
