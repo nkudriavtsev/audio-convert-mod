@@ -6,7 +6,7 @@ Summary:           A simple audio file converter supporting many formats
 Group:             Applications/Multimedia
 License:           GPLv2+
 URL:               https://github.com/nkudriavtsev/audio-convert-mod/edit/master/audio-convert-mod
-Source0:           https://github.com/nkudriavtsev/audio-convert-mod/archive/refs/tags/master.zip
+Source0:           https://github.com/nkudriavtsev/audio-convert-mod/archive/refs/heads/master.zip
 BuildRoot:         %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:     desktop-file-utils
