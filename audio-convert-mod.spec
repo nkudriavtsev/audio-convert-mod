@@ -5,8 +5,8 @@ BuildArch:         noarch
 Summary:           A simple audio file converter supporting many formats
 Group:             Applications/Multimedia
 License:           GPLv2+
-URL:               http://www.diffingo.com/oss/audio-convert-mod
-Source0:           https://downloads.diffingo.com/audio-convert-mod/audio-convert-mod-%{version}.tar.bz2
+URL:               https://github.com/nkudriavtsev/audio-convert-mod/edit/master/audio-convert-mod
+Source0:           https://github.com/nkudriavtsev/audio-convert-mod/archive/refs/tags/master.zip
 BuildRoot:         %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:     desktop-file-utils
