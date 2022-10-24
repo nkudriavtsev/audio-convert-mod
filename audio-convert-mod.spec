@@ -14,6 +14,7 @@ BuildRequires:     intltool
 BuildRequires:     python3-devel >= 3.6
 # For tag support in testbench
 BuildRequires:     python3-mutagen
+BuildRequires:     make
 
 Requires:          python3 >= 3.6
 Requires:          python3-notify2
