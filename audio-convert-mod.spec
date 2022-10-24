@@ -32,7 +32,7 @@ File tags/metadata are preserved when possible.
 
 
 %prep
-%setup -q
+%setup -q -n audio-convert-mod-master
 
 %build
 %configure
