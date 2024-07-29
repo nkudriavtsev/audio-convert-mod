@@ -87,7 +87,7 @@ class ConfigFile(configparser.ConfigParser):
     elif self.create == False and not os.path.exists(self.conffile):
       raise ConfigError(_('Attempted to read non-existant file \'%s\'') % self.conffile)
     self.fh = open(self.conffile,'r')
-    self.config.readfp(self.fh)
+    self.config.read_file(self.fh)
     self.fh.close()
 
   def write(self):
